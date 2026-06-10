@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div class="body-content">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>{% if status %}{{ status }} {% endif %}результаты оперативного запроса {{ distributed_id }}</h1>
+
+                <p class="lead">{{ query.description or '' }}</p>
+                <details style="cursor: pointer; margin-bottom: 20px;">
+                    <summary style="font-weight: 600; color: var(--accent-color); outline: none; margin-bottom: 5px;">Показать SQL-запрос</summary>
+                    <pre style="margin-top: 5px; white-space: pre-wrap;">{{ query.sql }}</pre>
+                </details>
+
+                {% if tasks %}
+                {% include "tables/distributed_results.html" %}
+
+                <div class="text-center">
+                    <small>{{ pagination.info }}</small>
+                    {{ pagination.links }}
+                </div>
+
+                {% else %}
+                    <p>
+                        Нет результатов оперативного запроса {{ distributed_id }}
+                        {%- if status %} в состоянии {{ status }}{% endif -%}
+                    </p>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends "layout.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='public/css/dataTables.bootstrap.min.css') }}"/>
+<style>
+    .dataTables_wrapper .dataTables_filter {
+        float: right;
+        text-align: right;
+    }
+    .dataTables_wrapper .dataTables_paginate {
+        float: right;
+        text-align: right;
+    }
+    .panel-body {
+        padding: 15px;
+    }
+    .table thead th {
+        background-color: #f9f9f9;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    #cmdbTable {
+        font-size: 12px;
+        width: 100% !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="page-header">
+            Отчёты
+            <small>Динамические данные инвентаризации</small>
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Боковая панель со списком типов -->
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Типы данных</h3>
+            </div>
+            <div class="list-group">
+                {% if not types %}
+                    <div class="list-group-item text-muted text-center">Нет данных для отчетов</div>
+                {% endif %}
+                
+                {% for type_name in types %}
+                    <a href="{{ url_for('manage.cmdb_reports', object_type=type_name) }}" 
+                       class="list-group-item {% if type_name == active_type %}active{% endif %}"
+                       style="display: flex; align-items: center;">
+                        <span style="flex: 1; padding-right: 15px; word-break: break-all; overflow-wrap: break-word; line-height: 1.1 !important;">
+                            <i class="fa fa-table"></i> &nbsp; {{ type_name | ru_translate }}
+                        </span>
+                        <span class="badge" style="flex-shrink: 0; float: none;">{{ type_counts[type_name] }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        
+
+    </div>
+
+    <!-- Основная таблица с данными -->
+    <div class="col-md-9">
+        {% if active_type %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="pull-right">
+                    <a href="{{ url_for('manage.cmdb_export', object_type=active_type) }}" class="btn btn-xs btn-success">
+                        <i class="fa fa-download"></i> Экспорт CSV
+                    </a>
+                </div>
+                <h3 class="panel-title">
+                    Просмотр: <strong>{{ active_type | ru_translate }}</strong>
+                    <span class="label label-primary">{{ records | length }} записей</span>
+                    <span class="label label-info">{{ total_nodes }} агентов</span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-container">
+                    <table id="cmdbTable" class="table table-striped table-hover table-condensed table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Агент</th>
+                            <th>Обновлено</th>
+                            {% for col in columns %}
+                                <th>{{ col | ru_translate }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in records %}
+                        <tr>
+                            <td><strong>{{ record.__node }}</strong></td>
+                            <td class="text-muted small">{{ record.__created_at | relative_time }}</td>
+                            {% for col in columns %}
+                                <td>{{ record[col] or '-' }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="jumbotron text-center">
+            <h1><i class="fa fa-bar-chart"></i></h1>
+            <p>Выберите тип данных слева для просмотра отчета.</p>
+            <p><small class="text-muted">Если список пуст, убедитесь, что агенты присылают данные инвентаризации.</small></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{{ url_for('static', filename='public/js/jquery.dataTables.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='public/js/dataTables.bootstrap.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        if ($('#cmdbTable').length > 0) {
+            $('#cmdbTable').DataTable({
+                "pageLength": 25,
+                "order": [[1, "desc"]],
+                "language": {
+                    "processing": "Подождите...",
+                    "search": "Поиск:",
+                    "lengthMenu": "Показать _MENU_ записей",
+                    "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
+                    "infoEmpty": "Записи с 0 до 0 из 0 записей",
+                    "infoFiltered": "(отфильтровано из _MAX_ записей)",
+                    "infoPostFix": "",
+                    "loadingRecords": "Загрузка записей...",
+                    "zeroRecords": "Записи не найдены",
+                    "emptyTable": "В таблице отсутствуют данные",
+                    "paginate": {
+                        "first": "Первая",
+                        "previous": "Предыдущая",
+                        "next": "Следующая",
+                        "last": "Последняя"
+                    },
+                    "aria": {
+                        "sortAscending": ": активировать для сортировки столбца по возрастанию",
+                        "sortDescending": ": активировать для сортировки столбца по убыванию"
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+

@@ -1,0 +1,19 @@
+Сработало правило оповещения: {{ match.rule.name }}
+
+Время: {{ timestamp }}
+Действие: {{ match.result.action }}
+Событие:
+{%- for key, value in match.result.columns | dictsort %}
+           {{ key }}: {{ value }}
+{%- endfor %}
+
+{%- if match.rule.description %}
+
+Описание:
+{{ match.rule.description }}
+{%- endif %}
+
+Последняя активность агента {{ node.display_name }} доступна по ссылке: {{ url_for('manage.node_activity', node_id=node.id, _external=True) }}.
+Настройки данного правила можно просмотреть здесь: {{ url_for('manage.rule', rule_id=match.rule.id, _external=True) }}.
+
+---Конец уведомления Системы Инвентаризации

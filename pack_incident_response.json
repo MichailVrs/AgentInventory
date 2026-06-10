@@ -1,0 +1,28 @@
+{
+  "queries": {
+    "live_active_users": {
+      "query": "SELECT user, tty, host, time FROM logged_in_users;",
+      "interval": 3600,
+      "platform": "all",
+      "version": "1.4.5",
+      "description": "Показывает пользователей, которые прямо сейчас авторизованы в системе.",
+      "value": "Активные сессии"
+    },
+    "suspicious_connections": {
+      "query": "SELECT p.name, p.pid, p.path, pos.local_address, pos.local_port, pos.remote_address, pos.remote_port FROM process_open_sockets pos JOIN processes p ON pos.pid = p.pid WHERE pos.remote_port != 0;",
+      "interval": 3600,
+      "platform": "all",
+      "version": "1.4.5",
+      "description": "Отображает процессы, которые прямо сейчас имеют активное сетевое соединение (удобно для поиска малвари).",
+      "value": "Сетевая активность процессов"
+    },
+    "system_uptime": {
+      "query": "SELECT days, hours, minutes, seconds FROM uptime;",
+      "interval": 3600,
+      "platform": "all",
+      "version": "1.4.5",
+      "description": "Показывает аптайм системы (сколько времени ПК работает без перезагрузки).",
+      "value": "Аптайм"
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div class="body-content">
+        <div class="row">
+            <div class="col-md-9">
+                <div style="margin-bottom: 20px;">
+                    <a href="{{ url_for('manage.queries') }}" class="text-muted" style="text-decoration: none; font-weight: 500;">
+                        <i class="fa fa-chevron-left"></i> Назад к списку запросов
+                    </a>
+                </div>
+
+                <form class="form form-horizontal" method="POST" role="form" enctype="multipart/form-data">
+                    <fieldset>
+                        <legend>Импорт запроса из файла</legend>
+                        {{ form.csrf_token }}
+
+                        <p class="text-muted" style="margin-bottom: 25px;">
+                            Вы можете автоматически создать запрос, загрузив его из файла.
+                            <br>• <strong>.sql</strong> — текст SQL-запроса, имя файла без расширения станет названием запроса.
+                            <br>• <strong>.json</strong> — структура одного запроса osquery в формате JSON (поддерживает интервал, описание, платформу и др.).
+                        </p>
+
+                        <div class="form-group">
+                            {{ form.query_file.label(class_="col-md-2 control-label") }}
+                            <div class="col-md-10" style="display: flex; align-items: center; min-height: 34px;">
+                                {{ form.query_file(id="query-file-input", class_="sr-only") }}
+                                <label for="query-file-input" class="btn btn-default" style="margin: 0; cursor: pointer; height: auto !important; padding: 6px 15px !important;">
+                                    Выбрать файл
+                                </label>
+                                <span id="query-file-name" class="text-muted" style="margin-left: 15px; font-weight: 500;">
+                                    Файл не выбран
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 20px;">
+                            {{ form.packs.label(class_="col-md-2 control-label") }}
+                            <div class="col-md-10">
+                                {{ form.packs(class_="form-control") }}
+                                <span class="help-block" style="font-size: 0.85em; color: #858c93; margin-top: 5px; display: block;">
+                                    Опционально привяжите импортируемый запрос к существующему пакету.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.tags.label(class_="col-md-2 control-label") }}
+                            <div class="col-md-10">
+                                {{ form.tags(placeholder="Одна метка на строку", class_="form-control", rows="3") }}
+                                <span class="help-block" style="font-size: 0.85em; color: #858c93; margin-top: 5px; display: block;">
+                                    Укажите метки хостов для автоматического таргетирования запроса (по одной метке на строку).
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 30px;">
+                            <div class="col-md-10 col-md-offset-2">
+                                <p>
+                                    <input class="btn btn-success btn-submit" type="submit" value="Импортировать запрос" style="height: auto !important; padding: 6px 20px !important; background-color: #22c55e; border-color: #22c55e;">
+                                </p>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+
+                <script>
+                    (function () {
+                        var input = document.getElementById('query-file-input');
+                        var fileName = document.getElementById('query-file-name');
+
+                        if (!input || !fileName) {
+                            return;
+                        }
+
+                        input.addEventListener('change', function () {
+                            fileName.textContent = input.files && input.files.length
+                                ? input.files[0].name
+                                : 'Файл не выбран';
+                        });
+                    }());
+                </script>
+
+            </div><!--./col-md-9-->
+        </div><!--./row-->
+    </div><!--./body-content-->
+
+{% endblock %}

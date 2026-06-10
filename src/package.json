@@ -1,0 +1,27 @@
+{
+  "name": "vkr-inventory",
+  "version": "1.0.0",
+  "description": "VKR Inventory System",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "postinstall": "bower install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "local"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "dependencies": {
+    "bower": "^1.7.9",
+    "less": "3.13.1"
+  }
+}

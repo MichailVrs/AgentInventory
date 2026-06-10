@@ -1,0 +1,58 @@
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{{ url_for('manage.index') }}">Система Инвентаризации</a>
+    </div><!-- /.navbar-header -->
+
+    <!-- Собираем ссылки навигации, формы и остальной контент -->
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+      {% if current_user and current_user.is_authenticated %}
+      <ul class="nav navbar-nav">
+        <!-- Агенты и Инвентаризация -->
+        <li{% if request.endpoint == 'manage.nodes' %} class="active" {% endif %}>
+          <a href="{{ url_for('manage.nodes') }}"><i class="fa fa-desktop"></i> &nbsp;Агенты</a>
+        </li>
+        <li class="dropdown {% if request.endpoint and ('cmdb' in request.endpoint or request.endpoint in ['manage.cmdb_reports', 'manage.custom_report_builder']) %}active{% endif %}">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-database"></i> &nbsp;Инвентаризация <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="{{ url_for('manage.cmdb_reports') }}"><i class="fa fa-table"></i> &nbsp;Сводные отчеты</a></li>
+            <li><a href="{{ url_for('manage.custom_report_builder') }}"><i class="fa fa-cogs"></i> &nbsp;Конструктор отчетов</a></li>
+          </ul>
+        </li>
+
+        <!-- Конфигурация сбора -->
+        <li class="dropdown {% if request.endpoint in ['manage.packs', 'manage.queries', 'manage.distributed', 'manage.tags'] %}active{% endif %}">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-sliders"></i> &nbsp;Конфигурация сбора <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="{{ url_for('manage.packs') }}"><i class="fa fa-briefcase"></i> &nbsp;Пакеты запросов</a></li>
+            <li><a href="{{ url_for('manage.queries') }}"><i class="fa fa-terminal"></i> &nbsp;Запросы</a></li>
+            <li><a href="{{ url_for('manage.distributed') }}"><i class="fa fa-bolt"></i> &nbsp;Оперативные запросы</a></li>
+            <li><a href="{{ url_for('manage.tags') }}"><i class="fa fa-tags"></i> &nbsp;Метки</a></li>
+          </ul>
+        </li>
+      </ul>
+      {% endif %}
+
+      {% if current_user.username %}
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+          <a class="navbar-link" href="{{ url_for('users.logout') }}"><i class="fa fa-sign-out"></i> &nbsp;Выход</a>
+        </li>
+      </ul>
+      {% endif %}
+
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container -->
+</nav>

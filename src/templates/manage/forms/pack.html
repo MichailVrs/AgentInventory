@@ -1,0 +1,50 @@
+﻿                <form class="form form-horizontal" method="POST" role="form" enctype="multipart/form-data">
+                    <fieldset>
+                        <legend>Загрузка пакета запросов</legend>
+                        {{ form.csrf_token }}
+
+                        <p>
+                            Формат пакетов запросов описан
+                            <a href="https://osquery.readthedocs.org/en/stable/deployment/configuration/#query-packs">в документации osquery</a>.
+                        </p>
+
+                        <div class="form-group">
+                            {{ form.pack.label(class_="col-md-2 control-label") }}
+                            <div class="col-md-10">
+                                {{ form.pack(id="pack-file-input", class_="sr-only") }}
+                                <label for="pack-file-input" class="btn btn-default">
+                                    Выбрать файл
+                                </label>
+                                <span id="pack-file-name" class="text-muted" style="margin-left: 8px;">
+                                    Файл не выбран
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-8 col-md-offset-2">
+                                <p><input class="btn-small btn-default btn-submit" type="submit" value="Загрузить пакет запросов"></p>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+
+                <script>
+                    (function () {
+                        var input = document.getElementById('pack-file-input');
+                        var fileName = document.getElementById('pack-file-name');
+
+                        if (!input || !fileName) {
+                            return;
+                        }
+
+                        input.addEventListener('change', function () {
+                            fileName.textContent = input.files && input.files.length
+                                ? input.files[0].name
+                                : 'Файл не выбран';
+                        });
+                    }());
+                </script>
+
+

@@ -1,0 +1,58 @@
+{
+  "queries": {
+    "cmdb_system_info": {
+      "query": "SELECT hostname, cpu_brand, cpu_physical_cores, cpu_logical_cores, physical_memory, hardware_vendor, hardware_model, hardware_serial FROM system_info;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Общая информация об оборудовании: CPU, RAM, модель, серийный номер"
+    },
+    "cmdb_os_version": {
+      "query": "SELECT name, version, major, minor, build, platform, install_date FROM os_version;",
+      "interval": 7200,
+      "platform": "windows",
+      "description": "Версия и сборка операционной системы"
+    },
+    "cmdb_services": {
+      "query": "SELECT name, display_name, status, start_type, path, user_account FROM services WHERE start_type != 'DISABLED';",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Службы Windows (кроме отключённых)"
+    },
+    "cmdb_scheduled_tasks": {
+      "query": "SELECT name, action, path, enabled, last_run_time, next_run_time FROM scheduled_tasks WHERE enabled = 1;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Активные запланированные задачи"
+    },
+    "cmdb_shared_folders": {
+      "query": "SELECT name, path, type, description FROM shared_resources;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Сетевые общие папки (SMB-шары)"
+    },
+    "cmdb_groups": {
+      "query": "SELECT g.groupname, g.gid, gu.uid AS user_uid FROM groups g LEFT JOIN user_groups gu ON g.gid = gu.gid;",
+      "interval": 7200,
+      "platform": "windows",
+      "description": "Локальные группы и их участники"
+    },
+    "cmdb_drivers": {
+      "query": "SELECT device_name, inf, provider, date, version, signed FROM drivers;",
+      "interval": 7200,
+      "platform": "windows",
+      "description": "Установленные драйверы устройств"
+    },
+    "cmdb_bitlocker": {
+      "query": "SELECT device_id, drive_letter, persistent_volume_id, protection_status, encryption_method FROM bitlocker_info;",
+      "interval": 7200,
+      "platform": "windows",
+      "description": "Состояние шифрования дисков BitLocker"
+    },
+    "cmdb_uptime": {
+      "query": "SELECT days, hours, minutes, total_seconds FROM uptime;",
+      "interval": 600,
+      "platform": "windows",
+      "description": "Время работы системы с последней перезагрузки"
+    }
+  }
+}

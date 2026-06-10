@@ -1,0 +1,23 @@
+
+            {% if pack.platform %}
+            <dt>Платформа</dt>
+            <dd>{{ pack.platform }}</dd>
+            {% endif %}
+            {% if pack.version %}
+            <dt>Версия</dt>
+            <dd>{{ pack.version }}</dd>
+            {% endif %}
+            {% if pack.description %}
+            <dt>Описание</dt>
+            <dd>{{ pack.description }}</dd>
+            {% endif %}
+            {% if pack.shard %}
+            <dt>Охват хостов</dt>
+            <dd>{{ pack.shard }}%</dd>
+            {% endif %}
+
+            {% for query in pack.queries | sort(attribute='name') %}
+                {% include "_query.html" %}
+            {% endfor %}
+
+

@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div class="body-content">
+        <div class="row">
+            {% if queries is defined %}
+
+            <div class="col-md-12">
+                <h1>
+                    {% if status and status|string|lower == 'new' %}Новые
+                    {% elif status and status|string|lower == 'pending' %}Ожидающие
+                    {% elif status and status|string|lower == 'complete' %}Завершенные
+                    {% elif status %}{{ status | capitalize }}{% endif %}
+                    {% if status %}оперативные{% else %}Оперативные{% endif %} запросы
+                    <a href="{{ url_for('manage.add_distributed') }}" class="btn btn-success btn-sm pull-right">
+                        <i class="fa fa-plus"></i> Новый запрос
+                    </a>
+                </h1>
+                <hr>
+
+                {% if queries %}
+                {% include "tables/distributed.html" %}
+
+                <div class="text-center">
+                    <small>{{ pagination.info }}</small>
+                    {{ pagination.links }}
+                </div>
+
+                {% else %}
+                <p>Нет оперативных запросов.</p>
+                {% endif %}
+
+            {% else %}
+            <div class="col-md-9">
+                {% include "forms/distributed.html" %}
+            {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+
+
+
+

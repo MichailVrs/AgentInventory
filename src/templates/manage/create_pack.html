@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div class="body-content">
+        <div class="row">
+            <div class="col-md-9">
+
+                <form class="form-horizontal" method="POST">
+                    <fieldset>
+                        <legend>Создать пакет запросов вручную</legend>
+                        {{ form.csrf_token }}
+
+                        <div class="form-group {% if form.name.errors %}has-error{% endif %}">
+                            {{ form.name.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.name(class_="form-control", placeholder="Например, custom_pack") }}
+                                {% for error in form.name.errors %}
+                                    <span class="help-block text-danger" style="color: #a94442; font-weight: bold;">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-group {% if form.platform.errors %}has-error{% endif %}">
+                            {{ form.platform.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.platform(class_="form-control") }}
+                                {% for error in form.platform.errors %}
+                                    <span class="help-block text-danger" style="color: #a94442; font-weight: bold;">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-group {% if form.version.errors %}has-error{% endif %}">
+                            {{ form.version.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.version(class_="form-control", placeholder="Минимальная версия osquery, например, >=1.8.2") }}
+                                {% for error in form.version.errors %}
+                                    <span class="help-block text-danger" style="color: #a94442; font-weight: bold;">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-group {% if form.description.errors %}has-error{% endif %}">
+                            {{ form.description.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.description(class_="form-control", placeholder="Введите описание назначения пакета") }}
+                                {% for error in form.description.errors %}
+                                    <span class="help-block text-danger" style="color: #a94442; font-weight: bold;">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-group {% if form.shard.errors %}has-error{% endif %}">
+                            {{ form.shard.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.shard(class_="form-control", type="number", min="1", max="100", placeholder="Например, 10 для 10% хостов") }}
+                                {% for error in form.shard.errors %}
+                                    <span class="help-block text-danger" style="color: #a94442; font-weight: bold;">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-group {% if form.tags.errors %}has-error{% endif %}">
+                            {{ form.tags.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.tags(placeholder="Одна метка на строку, например: windows", class_="form-control", rows="3") }}
+                                {% for error in form.tags.errors %}
+                                    <span class="help-block text-danger" style="color: #a94442; font-weight: bold;">{{ error }}</span>
+                                {% endfor %}
+                                <span class="help-block" style="font-size: 0.85em; color: #858c93; margin-top: 5px; display: block;">
+                                    Укажите метки хостов, к которым должен применяться этот пакет запросов (по одной на строку).
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-10 col-sm-offset-2">
+                                <p>
+                                    <input class="btn btn-primary btn-sm btn-submit" type="submit" value="Создать пакет" style="height: auto !important; padding: 6px 15px !important;">
+                                    <a href="{{ url_for('manage.packs') }}" class="btn btn-default btn-sm" style="margin-left: 10px; height: auto !important; padding: 6px 15px !important;">
+                                        Отмена
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+
+            </div><!--./col-md-9-->
+        </div><!--./row-->
+    </div><!--./body-content-->
+
+{% endblock %}

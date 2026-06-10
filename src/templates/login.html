@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block page_title %}Вход в систему{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+
+        <div class="col-md-4">
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center">
+                    Вход в систему
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" method="POST" id="loginform">
+                        {{ form.csrf_token }}
+
+                        {% if form.auth_method in ('internal', 'ldap') %}
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                {{ form.username(placeholder="Имя пользователя", class_="form-control", required=True,
+                                autofocus=True) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                {{ form.password(placeholder="Пароль", class_="form-control", required=True) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <button class="btn btn btn-primary btn-block" type="submit">Вход</button>
+                                <label class="checkbox pull-right" style="cursor: pointer;">
+                                    {{ form.remember() }}
+                                    Запомнить меня
+                                </label>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

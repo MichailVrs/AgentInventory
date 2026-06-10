@@ -1,0 +1,14 @@
+{
+  "name": "jQuery-QueryBuilder",
+  "homepage": "https://github.com/mistic100/jQuery-QueryBuilder",
+  "version": "2.7.0",
+  "_release": "2.7.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.7.0",
+    "commit": "b1ef8c3a8889ca0148d579b5551b360916fabf90"
+  },
+  "_source": "https://github.com/mistic100/jQuery-QueryBuilder.git",
+  "_target": "^2.3.3",
+  "_originalSource": "jQuery-QueryBuilder"
+}

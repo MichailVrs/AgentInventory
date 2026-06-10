@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div class="body-content">
+        <div class="row">
+            <div class="col-md-9">
+
+                <form class="form-horizontal" method="POST" enctype="multipart/form-data">
+                    <fieldset>
+                        <legend>Импорт результатов автономного сбора (оффлайн)</legend>
+                        {{ form.csrf_token }}
+
+                        <p class="help-block" style="margin-bottom: 25px;">
+                            Загрузите файл с результатами выполнения запросов osquery (формат JSON или JSON-lines), экспортированный с автономного хоста. Данные будут автоматически обработаны, привязаны к хосту и импортированы в базу CMDB.
+                        </p>
+
+                        <div class="form-group {% if form.logs_file.errors %}has-error{% endif %}">
+                            {{ form.logs_file.label(class_="col-md-3 control-label") }}
+                            <div class="col-md-9">
+                                {{ form.logs_file(id="logs-file-input", class_="sr-only") }}
+                                <label for="logs-file-input" class="btn btn-default" style="margin-top: 5px;">
+                                    Выбрать файл JSON / LOG
+                                </label>
+                                <span id="logs-file-name" class="text-muted" style="margin-left: 8px;">
+                                    Файл не выбран
+                                </span>
+                                {% for error in form.logs_file.errors %}
+                                    <span class="help-block text-danger" style="color: #a94442; font-weight: bold;">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-9 col-md-offset-3">
+                                <p>
+                                    <input class="btn btn-primary btn-sm btn-submit" type="submit" value="Импортировать данные" style="height: auto !important; padding: 6px 15px !important;">
+                                    <a href="{{ url_for('manage.nodes') }}" class="btn btn-default btn-sm" style="margin-left: 10px; height: auto !important; padding: 6px 15px !important;">
+                                        Отмена
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+
+                <script>
+                    (function () {
+                        var input = document.getElementById('logs-file-input');
+                        var fileName = document.getElementById('logs-file-name');
+
+                        if (!input || !fileName) {
+                            return;
+                        }
+
+                        input.addEventListener('change', function () {
+                            fileName.textContent = input.files && input.files.length
+                                ? input.files[0].name
+                                : 'Файл не выбран';
+                        });
+                    }());
+                </script>
+
+            </div><!--./col-md-9-->
+        </div><!--./row-->
+    </div><!--./body-content-->
+
+{% endblock %}

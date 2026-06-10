@@ -1,0 +1,28 @@
+﻿{% extends "layout.html" %}
+{% block content %}
+
+    <div class="body-content">
+        <div class="row">
+            <div class="col-md-12">
+                <h1><a href="{{ url_for('manage.get_node', node_id=node.id) }}">{{ node.display_name }}</a> / <a href="{{ url_for('manage.node_activity', node_id=node.id) }}">недавняя активность</a> / логи</h1>
+
+                {% if status_logs %}
+                {% set logs = status_logs %}
+                {% include "tables/logs.html" %}
+
+                <div class="text-center">
+                    <small>{{ pagination.info }}</small>
+                    {{ pagination.links }}
+                </div>
+
+                {% else %}
+                <p>Для этого агента нет журналов состояния.</p>
+                {% endif %}
+
+        </div>
+    </div>
+
+{% endblock %}
+
+
+

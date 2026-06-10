@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='public/css/dataTables.bootstrap.min.css') }}"/>
+<style>
+    .dataTables_wrapper .dataTables_filter {
+        float: right;
+        text-align: right;
+    }
+    .dataTables_wrapper .dataTables_paginate {
+        float: right;
+        text-align: right;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="body-content">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>
+                    {% if status == 'active' %}
+                    активные агенты /
+                    <a href="{{ url_for('manage.nodes', status='offline') }}">офлайн-агенты</a> /
+                    <a href="{{ url_for('manage.nodes', status='inactive') }}">неактивные агенты</a>
+                    {% elif status == 'offline' %}
+                    <a href="{{ url_for('manage.nodes') }}">активные агенты</a> /
+                    офлайн-агенты /
+                    <a href="{{ url_for('manage.nodes', status='inactive') }}">неактивные агенты</a>
+                    {% else %}
+                    <a href="{{ url_for('manage.nodes') }}">активные агенты</a> /
+                    <a href="{{ url_for('manage.nodes', status='offline') }}">офлайн-агенты</a> /
+                    неактивные агенты
+                    {% endif %}
+                </h1>
+                
+                <div class="pull-right" style="margin-top: -45px; display: flex; gap: 8px;">
+                    <a href="{{ url_for('manage.import_offline_logs') }}" class="btn btn-primary" style="height: auto !important; padding: 6px 15px !important;"><i class="fa fa-upload"></i> Импорт оффлайн-данных</a>
+                    <a href="{{ url_for('manage.nodes_csv') }}" class="btn btn-default" style="height: auto !important; padding: 6px 15px !important;"><i class="fa fa-download"></i> Экспорт в CSV</a>
+                </div>
+                
+                {% if nodes %}
+                {% include "tables/nodes.html" %}
+
+
+
+                {% elif request.endpoint == url_for('manage.nodes') %}
+                <p>Ещё не зарегистрировано ни одного агента!</p>
+                {% endif %}
+
+            </div><!--./col-md-12-->
+        </div><!--./row-->
+    </div><!--./body-content-->
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{{ url_for('static', filename='public/js/jquery.dataTables.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='public/js/dataTables.bootstrap.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        if ($('#nodesTable').length > 0) {
+            $('#nodesTable').DataTable({
+                "pageLength": 50,
+                "language": {
+                    "processing": "Подождите...",
+                    "search": "Поиск:",
+                    "lengthMenu": "Показать _MENU_ записей",
+                    "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
+                    "infoEmpty": "Записи с 0 до 0 из 0 записей",
+                    "infoFiltered": "(отфильтровано из _MAX_ записей)",
+                    "zeroRecords": "Записи не найдены",
+                    "emptyTable": "В таблице отсутствуют данные",
+                    "paginate": {
+                        "first": "Первая",
+                        "previous": "Предыдущая",
+                        "next": "Следующая",
+                        "last": "Последняя"
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+
+

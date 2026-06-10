@@ -1,0 +1,126 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div class="body-content">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>{{ node.display_name }} / <a href="{{ url_for('manage.node_activity', node_id=node.id) }}">недавняя активность</a> / <a href="{{ url_for('manage.node_logs', node_id=node.id) }}">логи</a></h1>
+
+                <div class="row">
+                    <div class="col-md-3">
+
+                        <h2>Информация</h2>
+
+                        <table class="table table-striped" style="width: 100%; border: none;">
+                            {% if current_app.config.DOORMAN_CAPTURE_NODE_INFO %}
+                            {% for column, label in current_app.config.DOORMAN_CAPTURE_NODE_INFO %}
+                            <tr>
+                                <th style="width: 40%; text-align: left; font-weight: 600;">{{ label | ru_translate }}</th>
+                                <td>
+                                    {% if column in node.node_info and node.node_info[column] %}
+                                        {{ node.node_info[column] | render(column) }}
+                                    {% else %}
+                                        <span class="text-muted" style="font-style: italic; color: #94a3b8;">Ожидание опроса...</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                            <tr>
+                                <th style="text-align: left; font-weight: 600;">Последний IP-адрес</th>
+                                <td><code>{{ node.last_ip | default('', true) }}</code></td>
+                            </tr>
+                            <tr>
+                                <th style="text-align: left; font-weight: 600;">Идентификатор хоста</th>
+                                <td class="text-muted small"><code>{{ node.host_identifier }}</code></td>
+                            </tr>
+                            <tr>
+                                <th style="text-align: left; font-weight: 600;">Дата регистрации</th>
+                                <td class="text-muted small" title="{{ node.enrolled_on }}">{{ node.enrolled_on | relative_time }}</td>
+                            </tr>
+                            <tr>
+                                <th style="text-align: left; font-weight: 600;">Последняя активность</th>
+                                <td class="text-muted small" title="{{ node.last_checkin }}">{{ node.last_checkin | relative_time }}</td>
+                            </tr>
+                            <tr>
+                                <th style="text-align: left; font-weight: 600;">Статус активности</th>
+                                <td>
+                                    <button class="activate-node btn btn-xs btn-default" data-uri="{{ url_for('manage.get_node', node_id=node.id) }}" style="border: none; background: transparent; font-size: 18px; padding: 0;">
+                                        <i class="fa fa-{{ 'check-square-o' if node.is_active else 'square-o' }}" style="color: var(--accent-color); font-size: 20px;"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div><!--./col-md-3-->
+
+                    <div class="col-md-9">
+
+                        <h2>Пакеты запросов</h2>
+
+                        {% if packs is not defined %}
+                        {% set packs = node.packs.all() %}
+                        {% endif %}
+
+                        {% if packs %}
+                        {% include "tables/packs.html" %}
+                        {% else %}
+
+                        <p>Нет пакетов, связанных с этим агентом. Используйте метки для привязки пакетов к агентам.</p>
+
+                        {% endif %}
+
+                        <h2>Запросы</h2>
+
+                        {% if queries is not defined %}
+                        {% set queries = node.queries.all() %}
+                        {% endif %}
+
+                        {% if queries %}
+                        {% include "tables/queries.html" %}
+                        {% else %}
+
+                        <p>Нет запросов, связанных с этим агентом. Используйте метки для привязки запросов к агентам.</p>
+
+                        {% endif %}
+
+                        {#
+                        <h2>File Integrity Monitoring</h2>
+
+                        {% if file_paths is not defined %}
+                        {% set file_paths = node.file_paths.all() %}
+                        {% endif %}
+
+                        {% if file_paths %}
+                        <ul>
+                            {% for file_path in file_paths %}
+                            <li>{{ file_path.category }}</li>
+                            <ul>
+                                {% for path in file_path.get_paths() %}
+                                <li><code>{{ path }}</code></li>
+                                {% endfor %}
+                            </ul>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+
+                        <p>На данном агенте нет файлов, за которыми ведется наблюдение. Используйте метки для привязки путей к файлам для мониторинга.</p>
+
+                        {% endif %}
+                        #}
+
+                        <h2>Метки</h2>
+
+                        <input class="tagsinput" placeholder="Введите метку" value="{{ node.tags | map(attribute='value') | sort | join(',') }}" data-uri="{{ url_for('manage.tag_node', node_id=node.id) }}">
+
+                    </div><!--./col-md-9-->
+                </div><!--./row-->
+            </div><!--./col-md-12-->
+        </div><!--./row-->
+    </div><!--./body-content-->
+
+{% endblock %}
+
+
+
+

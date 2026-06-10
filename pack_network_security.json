@@ -1,0 +1,16 @@
+{
+  "queries": {
+    "security_listening_ports": {
+      "query": "SELECT p.name AS process_name, lp.port, lp.protocol FROM listening_ports lp JOIN processes p ON lp.pid = p.pid WHERE lp.port != 0;",
+      "interval": 600,
+      "platform": "windows",
+      "description": "Мониторинг открытых TCP/UDP портов и процессов, которые их слушают"
+    },
+    "security_local_users": {
+      "query": "SELECT username, description, directory FROM users;",
+      "interval": 600,
+      "platform": "windows",
+      "description": "Сбор локальных пользователей для обнаружения несанкционированных учеток"
+    }
+  }
+}

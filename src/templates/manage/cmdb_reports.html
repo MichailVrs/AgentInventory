@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+{% block page_title %}Отчёты — Inventory{% endblock %}
+{% block content %}
+
+    <div class="body-content">
+        <div class="row">
+            <div class="col-md-12">
+
+                <h1><i class="fa fa-bar-chart"></i> Отчёты</h1>
+                <p class="text-muted">
+                    Данные инвентаризации, собранные агентами Osquery и нормализованные в модель EAV.
+                </p>
+
+                <!-- Навигация по типам отчётов -->
+                <ul class="nav nav-tabs" style="margin-bottom: 20px;">
+                    <li{% if report_type == 'software' %} class="active"{% endif %}>
+                        <a href="{{ url_for('manage.cmdb_reports', report_type='software') }}">
+                            <i class="fa fa-desktop"></i> Программное обеспечение
+                        </a>
+                    </li>
+                    <li{% if report_type == 'usb' %} class="active"{% endif %}>
+                        <a href="{{ url_for('manage.cmdb_reports', report_type='usb') }}">
+                            <i class="fa fa-usb"></i> USB-устройства
+                        </a>
+                    </li>
+                    <li{% if report_type == 'network' %} class="active"{% endif %}>
+                        <a href="{{ url_for('manage.cmdb_reports', report_type='network') }}">
+                            <i class="fa fa-sitemap"></i> Сетевые интерфейсы
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Панель действий -->
+                <div class="row" style="margin-bottom: 15px;">
+                    <div class="col-md-6">
+                        <span class="label label-info" style="font-size: 14px;">
+                            Записей: {{ rows|length }}
+                        </span>
+                        {% if nodes_count is defined %}
+                        <span class="label label-success" style="font-size: 14px; margin-left: 5px;">
+                            Агентов: {{ nodes_count }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <a href="{{ url_for('manage.cmdb_report_csv', report_type=report_type) }}"
+                           class="btn btn-default btn-sm">
+                            <i class="fa fa-download"></i> Экспорт в CSV
+                        </a>
+                    </div>
+                </div>
+
+                {% if rows %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-condensed table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>node</th>
+                                {% for col in columns %}
+                                <th>{{ col.label }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in rows %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    {% if row.node %}
+                                    <a href="{{ url_for('manage.get_node', node_id=row.node_id) }}">
+                                        {{ row.node.display_name }}
+                                    </a>
+                                    {% else %}
+                                        {{ row.node_id }}
+                                    {% endif %}
+                                </td>
+                                {% for col in columns %}
+                                <td>{{ row[col.key] or '—' }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    <strong>Нет данных.</strong>
+                    Убедитесь, что:
+                    <ul style="margin-top: 5px;">
+                        <li>Агент Osquery подключён и активен (раздел <a href="{{ url_for('manage.nodes') }}">Агенты</a>)</li>
+                        <li>Запрос (Query) назначен агенту через пакет запросов или метку</li>
+                        <li>Фоновый обработчик (Celery Worker) работает и подключён к Redis (<code>docker compose logs worker --tail 10</code>)</li>
+                    </ul>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+

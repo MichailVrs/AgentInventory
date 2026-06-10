@@ -1,0 +1,86 @@
+<!doctype html>
+<!-- Стандартные условные стили для старых версий IE -->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="ru"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="ru"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="ru"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="ru"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <title>{% block page_title %}
+  
+    Инвентаризация
+  
+    {% endblock %}
+  </title>
+  <meta name="description" content="{% block meta_description %}{% endblock %}">
+  <meta name="author" content="{% block meta_author %}{% endblock %}">
+
+  <!-- Оптимизация для мобильных устройств -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+
+  <!-- Local FontAwesome (offline first) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='libs/font-awesome/css/font-awesome.min.css') }}">
+  
+  <!-- Premium Modern UI design system (offline first) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/modern.css') }}">
+
+  <link rel="stylesheet" href="/static/public/css/common.css">
+  {#
+  {% assets "css_all" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {% endassets %}
+  #}
+
+
+  {% block css %}{% endblock %}
+
+</head>
+<body class="{% block body_class %}{% endblock %}">
+{% block body %}
+{% with form=form  %}
+{% include "nav.html" %}
+{% endwith %}
+
+<header>{% block header %}{% endblock %}</header>
+<div class="{% block content_class %}container-fluid{% endblock content_class %}">
+
+  <div role="main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="row">
+      <div class="col-md-12">
+        {% for category, message in messages %}
+        <div class="alert alert-dissmissible alert-{{ category }}">
+          <a class="close" title="Закрыть" href="#" data-dismiss="alert">&times;</a>
+         {{ message }}
+        </div><!-- end .alert -->
+        {% endfor %}
+      </div><!-- end col-md -->
+    </div><!-- end row -->
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    {% include "footer.html" %}
+  </div><!-- end main -->
+
+</div><!-- end container -->
+
+<!-- JavaScript at the bottom for fast page loading -->
+<script type="text/javascript" src="{{ url_for('static', filename='public/js/common.js', v='rebuild-20260610b') }}"></script>
+{#
+{% assets "js_all" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+#}
+{% block js %}{% endblock %}
+<!-- end scripts -->
+{% endblock %}
+</body>
+</html>
+
+
+

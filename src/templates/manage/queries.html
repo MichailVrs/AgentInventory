@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div class="body-content">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>
+                    Запросы
+                    <span class="pull-right">
+                        <a href="{{ url_for('manage.upload_query') }}" class="btn btn-success btn-sm" style="height: auto !important; padding: 6px 15px !important; background-color: #22c55e; border-color: #22c55e; margin-left: 10px;">
+                            <i class="fa fa-upload"></i> Загрузить файл
+                        </a>
+                        <a href="{{ url_for('manage.add_query') }}" class="btn btn-info btn-sm" style="height: auto !important; padding: 6px 15px !important; background-color: #0284c7; border-color: #0284c7;">
+                            <i class="fa fa-plus"></i> Создать вручную
+                        </a>
+                    </span>
+                </h1>
+                <hr>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+
+
+                {% if queries %}
+                {% for query in queries | sort(attribute='name') %}
+                {% include "_query.html" %}
+                {% endfor %}
+                {% else %}
+                <p>Запросы не созданы. Вы можете <a href="{{ url_for('manage.add_query') }}">создать запрос</a> или <a href="{{ url_for('manage.add_pack') }}">загрузить пакет запросов</a>.<p>
+                {% endif %}
+
+            </div>
+
+            <nav class="col-md-3 bs-docs-sidebar">
+                <ul class="nav nav-stacked fixed" id="sidebar">
+                {% if queries %}
+                    {% for query in queries | sort(attribute='name') %}
+                    <li><a href="#{{ query.name }}">{{ query.name }}</a></li>
+                    {% endfor %}
+                {% endif %}
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+
+

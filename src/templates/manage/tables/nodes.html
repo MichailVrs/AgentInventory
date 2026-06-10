@@ -1,0 +1,42 @@
+                 <table id="nodesTable" class="table table-striped table-bordered table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <th>Агент</th>
+                            <th>Статус</th>
+                            <th>Ключ</th>
+                            <th>IP-адрес</th>
+                            <th>Регистрация</th>
+                            <th>Активность</th>
+                            <th>Метки</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for node in nodes %}
+
+                        <tr>
+                            <td>
+                                <strong><a href="{{ url_for('manage.get_node', node_id=node.id) }}">{{ node.display_name }}</a></strong>
+                            </td>
+                            <td>
+                                {% if node | health == 'danger' %}
+                                <span class="label label-warning" style="font-size: 10px; display: inline-block; padding: .2em .6em .3em;"><i class="fa fa-circle-o"></i> Офлайн</span>
+                                {% else %}
+                                <span class="label label-success" style="font-size: 10px; display: inline-block; padding: .2em .6em .3em;"><i class="fa fa-circle"></i> В сети</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted small"><code>{{ node.node_key[:8] }}...</code></td>
+                            <td><code>{{ node.last_ip | default('', true) }}</code></td>
+                            <td class="text-muted small" title="{{ node.enrolled_on }}">{{ node.enrolled_on | relative_time }}</td>
+                            <td class="text-muted small" title="{{ node.last_checkin }}">{{ node.last_checkin | relative_time }}</td>
+                            <td>
+                                <input class="tagsinput" value="{{ node.tags | map(attribute='value') | sort | join(',') }}" data-uri="{{ url_for('manage.tag_node', node_id=node.id) }}">
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+
+

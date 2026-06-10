@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div class="body-content">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>
+                    Мониторинг файлов
+                    <a href="{{ url_for('manage.add_file') }}" class="btn btn-success btn-sm pull-right">
+                        <i class="fa fa-plus"></i> Добавить путь
+                    </a>
+                </h1>
+                <hr>
+
+                {% if file_paths %}
+                {% for file_path in file_paths %}
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 15px;">
+                    <h2 style="margin: 0; font-weight: 600; color: #1e293b;">
+                        <a href="{{ url_for('manage.file_path', file_path_id=file_path.id) }}" style="text-decoration: none; color: inherit;">
+                            <i class="fa fa-folder-open-o text-primary"></i> &nbsp;{{ file_path.category }}
+                        </a>
+                    </h2>
+                    <form action="{{ url_for('manage.delete_file_path', file_path_id=file_path.id) }}" method="POST" style="margin: 0;" onsubmit="return confirm('Вы уверены, что хотите удалить путь мониторинга «{{ file_path.category }}»?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-danger btn-xs" style="height: auto !important; padding: 4px 10px !important;">
+                            <i class="fa fa-trash"></i> Удалить
+                        </button>
+                    </form>
+                </div>
+
+                <div class="panel panel-default" style="border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px;">
+                    <div class="panel-body">
+                        <ul class="list-group" style="margin-bottom: 10px;">
+                            {% for path in file_path.get_paths() %}
+                            <li class="list-group-item" style="border: none; padding: 6px 15px; font-family: monospace; background: transparent;">
+                                <i class="fa fa-file-o text-muted"></i> &nbsp;{{ path }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <div style="padding-top: 10px; border-top: 1px solid #f1f5f9; margin-top: 10px;">
+                            <input class="tagsinput" placeholder="Введите метку" value="{{ file_path.tags | map(attribute='value') | sort | join(',') }}" data-uri="{{ url_for('manage.tag_file', file_path_id=file_path.id) }}" size="23">
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p>Пути мониторинга файлов не заданы. Добавьте путь, чтобы использовать контроль целостности файлов osquery.</p>
+                {% endif %}
+
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+

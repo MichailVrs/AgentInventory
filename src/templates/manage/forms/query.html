@@ -1,0 +1,118 @@
+                <form class="form-horizontal" method="POST" enctype="multipart/form-data">
+                    <fieldset>
+                        {% if query is defined %}
+                        <legend>Редактирование запроса</legend>
+                        {% else %}
+                        <legend>Добавление запроса</legend>
+                        {% endif %}
+                        {{ form.csrf_token }}
+
+
+
+                        <div class="form-group">
+                            {{ form.name.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.name(class_="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.sql.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.sql(class_="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.interval.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.interval(class_="form-control", type="number") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.platform.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.platform(class_="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.version.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.version(class_="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.description.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.description(class_="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.value.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.value(class_="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.shard.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.shard(class_="form-control", type="number", min="1", max="100", placeholder="Например, 10 для 10% хостов") }}
+                                <span class="help-block" style="font-size: 0.85em; color: #858c93; margin-top: 5px; display: block;">
+                                    Ограничивает выполнение запроса на случайном проценте хостов (Canary-развертывание). Укажите значение от 1 до 100. Оставьте пустым или введите 100 для полного охвата хостов.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Параметры запроса</label>
+
+                            <div class="checkbox col-sm-5">
+                                <label>
+                                    {{ form.removed() }} {{ form.removed.label.text }}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.packs.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.packs(class_="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.tags.label(class_="col-sm-2 control-label") }}
+                            <div class="col-sm-10">
+                                {{ form.tags(placeholder="Одна метка на строку", class_="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group"> 
+                            <div class="col-sm-10 col-sm-offset-2">
+                                <p style="display: flex; align-items: center;">
+                                    <input class="btn btn-primary btn-sm btn-submit" type="submit" value="{% if query is defined %}Сохранить запрос{% else %}Добавить запрос{% endif %}" style="height: auto !important; padding: 6px 15px !important;">
+                                    {% if query is defined %}
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm js-delete"
+                                            id="btn-delete-query"
+                                            data-uri="{{ url_for('manage.delete_query', query_id=query.id) }}"
+                                            data-confirm="Вы уверены, что хотите удалить этот запрос? Это действие нельзя отменить."
+                                            data-redirect="{{ url_for('manage.queries') }}"
+                                            style="margin-left: 10px; height: auto !important; padding: 6px 15px !important;">
+                                        <span class="glyphicon glyphicon-trash" data-uri="{{ url_for('manage.delete_query', query_id=query.id) }}"></span> Удалить запрос
+                                    </button>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+
+                    </fieldset>
+
+                </form>
+
+

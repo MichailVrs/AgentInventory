@@ -1,0 +1,22 @@
+{
+  "queries": {
+    "cmdb_software": {
+      "query": "SELECT name, version, publisher, install_date FROM programs;",
+      "interval": 60,
+      "platform": "windows",
+      "description": "Сбор установленного ПО для интеграции с Naumen"
+    },
+    "cmdb_usb_devices": {
+      "query": "SELECT vendor, model, serial, usb_port FROM usb_devices;",
+      "interval": 60,
+      "platform": "windows",
+      "description": "Сбор подключенных USB устройств"
+    },
+    "cmdb_network": {
+      "query": "SELECT a.interface, d.mac, a.address as ip_address, a.mask FROM interface_addresses a JOIN interface_details d ON a.interface = d.interface WHERE a.address != '127.0.0.1' AND a.address NOT LIKE '%::%';",
+      "interval": 60,
+      "platform": "windows",
+      "description": "Сбор сетевых интерфейсов (IPv4)"
+    }
+  }
+}

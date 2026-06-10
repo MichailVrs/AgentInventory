@@ -1,0 +1,49 @@
+# --- Environments and Credentials ---
+.env
+*.env
+.env.*
+
+# --- Python Virtual Environments ---
+venv/
+.venv/
+env/
+ENV/
+pyvenv.cfg
+pip-selfcheck.json
+
+# --- Python Compiled Caches ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# --- IDEs and Editors ---
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+
+# --- System Files ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# --- Project-specific Temporary Files & Logs ---
+log.txt
+*.log
+doc_text.txt
+.claude/
+*.db
+*.sqlite
+
+# --- Academic Documents (Thesis) ---
+ВКР.docx
+*.docx

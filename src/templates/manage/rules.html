@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div class="body-content">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>
+                    Правила
+                    <a href="{{ url_for('manage.add_rule') }}" class="btn btn-success btn-sm pull-right">
+                        <i class="fa fa-plus"></i> Создать правило
+                    </a>
+                </h1>
+                <hr>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+
+
+                {% if rules %}
+
+                {% for rule in rules | sort(attribute='name') %}
+                {% include "_rule.html" %}
+                {% endfor %}
+
+                {% else %}
+                <p>Правила не настроены. Вы можете <a href="{{ url_for('manage.add_rule') }}">создать новое правило</a>.
+                {% endif %}
+
+            </div>
+
+            <nav class="col-md-3 bs-docs-sidebar">
+                <ul class="nav nav-stacked fixed" id="sidebar">
+                {% if rules %}
+                    {% for rule in rules | sort(attribute='name') %}
+                    <li><a href="#rule-{{ rule.id }}">{{ rule.name }}</a></li>
+                    {% endfor %}
+                {% endif %}
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+
+{% endblock %}
