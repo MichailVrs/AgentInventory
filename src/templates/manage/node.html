@@ -4,7 +4,12 @@
     <div class="body-content">
         <div class="row">
             <div class="col-md-12">
-                <h1>{{ node.display_name }} / <a href="{{ url_for('manage.node_activity', node_id=node.id) }}">недавняя активность</a> / <a href="{{ url_for('manage.node_logs', node_id=node.id) }}">логи</a></h1>
+                <h1>
+                    <a href="{{ url_for('manage.nodes') }}" class="btn btn-default btn-sm" style="margin-right: 15px; vertical-align: middle; height: auto !important; padding: 6px 15px !important;">
+                        <i class="fa fa-chevron-left"></i> Назад
+                    </a>
+                    {{ node.display_name }} / <a href="{{ url_for('manage.node_activity', node_id=node.id) }}">недавняя активность</a> / <a href="{{ url_for('manage.node_logs', node_id=node.id) }}">логи</a>
+                </h1>
 
                 <div class="row">
                     <div class="col-md-3">
@@ -12,8 +17,8 @@
                         <h2>Информация</h2>
 
                         <table class="table table-striped" style="width: 100%; border: none;">
-                            {% if current_app.config.DOORMAN_CAPTURE_NODE_INFO %}
-                            {% for column, label in current_app.config.DOORMAN_CAPTURE_NODE_INFO %}
+                            {% if current_app.config.INVENTORY_CAPTURE_NODE_INFO %}
+                            {% for column, label in current_app.config.INVENTORY_CAPTURE_NODE_INFO %}
                             <tr>
                                 <th style="width: 40%; text-align: left; font-weight: 600;">{{ label | ru_translate }}</th>
                                 <td>

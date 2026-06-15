@@ -12,7 +12,10 @@
 
                             <div class="form-group"> 
                                 <div class="col-md-10 col-md-offset-2">
-                                    <p><input class="btn-small btn-default btn-submit" type="submit" value="Добавить метки"></p>
+                                    <p>
+                                        <input class="btn btn-primary btn-submit" type="submit" value="Добавить метки" style="height: auto !important; padding: 6px 15px !important;">
+                                        <a href="{{ url_for('manage.tags') }}" class="btn btn-default" style="margin-left: 10px; height: auto !important; padding: 6px 15px !important;">Отмена</a>
+                                    </p>
                                 </div>
                             </div>
 

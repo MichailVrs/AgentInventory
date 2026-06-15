@@ -96,6 +96,7 @@
                             <div class="col-sm-10 col-sm-offset-2">
                                 <p style="display: flex; align-items: center;">
                                     <input class="btn btn-primary btn-sm btn-submit" type="submit" value="{% if query is defined %}Сохранить запрос{% else %}Добавить запрос{% endif %}" style="height: auto !important; padding: 6px 15px !important;">
+                                    <a href="{{ url_for('manage.queries') }}" class="btn btn-default btn-sm" style="margin-left: 10px; height: auto !important; padding: 6px 15px !important;">Отмена</a>
                                     {% if query is defined %}
                                     <button type="button"
                                             class="btn btn-danger btn-sm js-delete"

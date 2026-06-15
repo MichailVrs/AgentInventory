@@ -18,7 +18,7 @@ from utils import get_node_health, pretty_field, pretty_operator, render_column,
 def create_app(config=ProdConfig):
     app = Flask(__name__)
     app.config.from_object(config)
-    app.config.from_envvar('DOORMAN_SETTINGS', silent=True)
+    app.config.from_envvar('INVENTORY_SETTINGS', silent=True)
 
     register_blueprints(app)
     register_errorhandlers(app)
@@ -34,11 +34,11 @@ def register_blueprints(app):
     app.register_blueprint(api)
     csrf.exempt(api)
 
-    # if the DOORMAN_NO_MANAGER environment variable isn't set,
-    # register the backend blueprint. This is useful when you want
-    # to only deploy the api as a standalone service.
+    # Если переменная окружения INVENTORY_NO_MANAGER не задана,
+    # зарегистрировать блупринт бэкенда (панель управления). Это полезно,
+    # когда требуется развернуть только API как отдельный сервис.
 
-    if 'DOORMAN_NO_MANAGER' in os.environ:
+    if 'INVENTORY_NO_MANAGER' in os.environ:
         return
 
     app.register_blueprint(backend)
@@ -58,11 +58,10 @@ def register_extensions(app):
     login_manager.init_app(app)
     sentry.init_app(app)
     if app.config['ENFORCE_SSL']:
-        # Due to architecture of flask-sslify,
-        # its constructor expects to be launched within app context
-        # unless app is passed.
-        # As a result, we cannot create sslify object in `extensions` module
-        # without getting an error.
+        # Из-за архитектуры flask-sslify его конструктор ожидает запуска
+        # внутри контекста приложения, если только объект приложения не передан явно.
+        # В результате мы не можем создать объект sslify в модуле `extensions`
+        # без возникновения ошибки.
         from flask_sslify import SSLify
         SSLify(app)
 
@@ -75,31 +74,40 @@ def register_loggers(app):
     from logging.handlers import WatchedFileHandler
     import sys
 
-    logfile = app.config['DOORMAN_LOGGING_FILENAME']
+    logfile = app.config['INVENTORY_LOGGING_FILENAME']
     if logfile == '-':
         handler = logging.StreamHandler(sys.stdout)
     else:
         handler = WatchedFileHandler(logfile)
-    levelname = app.config['DOORMAN_LOGGING_LEVEL']
+    levelname = app.config['INVENTORY_LOGGING_LEVEL']
     if levelname in ('DEBUG', 'INFO', 'WARN', 'WARNING', 'ERROR', 'CRITICAL'):
         handler.setLevel(getattr(logging, levelname))
-    formatter = logging.Formatter(app.config['DOORMAN_LOGGING_FORMAT'])
+    formatter = logging.Formatter(app.config['INVENTORY_LOGGING_FORMAT'])
     handler.setFormatter(formatter)
 
     app.logger.addHandler(handler)
 
 
 def register_errorhandlers(app):
-    """Register error handlers."""
+    """Регистрация обработчиков ошибок."""
+    from flask_wtf.csrf import CSRFError
+    from flask import redirect, url_for, flash, request
+
+    @app.errorhandler(CSRFError)
+    def handle_csrf_error(e):
+        flash(u'Срок действия сессии (CSRF-токена) истек. Пожалуйста, попробуйте еще раз.', 'danger')
+        next_url = request.referrer or url_for('manage.index')
+        return redirect(next_url)
+
     def render_error(error):
-        """Render error template."""
-        # If a HTTPException, pull the `code` attribute; default to 500
+        """Отрисовка шаблона ошибки."""
+        # Если это HTTPException, извлекаем атрибут 'code'; по умолчанию 500
         error_code = getattr(error, 'code', 500)
-        if 'DOORMAN_NO_MANAGER' in os.environ:
+        if 'INVENTORY_NO_MANAGER' in os.environ:
             return '', 400
         return render_template('{0}.html'.format(error_code)), error_code
 
-    for errcode in [401, 403, 404, 500]:
+    for errcode in [400, 401, 403, 404, 500]:
         app.errorhandler(errcode)(render_error)
 
 
@@ -128,7 +136,7 @@ def register_auth_method(app):
         ldap_manager.init_app(app)
         return
 
-    # no other authentication methods left, falling back to OAuth
+    # Другие методы аутентификации отсутствуют, переключаемся на OAuth
 
     if app.config['AUTH_METHOD'] != 'internal':
         login_manager.login_message = None

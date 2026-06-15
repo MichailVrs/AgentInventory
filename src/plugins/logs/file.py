@@ -9,9 +9,9 @@ from utils import extract_results, quote
 
 class LogPlugin(AbstractLogsPlugin):
     def __init__(self, config):
-        append = config.setdefault('DOORMAN_LOG_FILE_PLUGIN_APPEND', True)
-        status_path = config.get('DOORMAN_LOG_FILE_PLUGIN_STATUS_LOG')
-        result_path = config.get('DOORMAN_LOG_FILE_PLUGIN_RESULT_LOG')
+        append = config.setdefault('INVENTORY_LOG_FILE_PLUGIN_APPEND', True)
+        status_path = config.get('INVENTORY_LOG_FILE_PLUGIN_STATUS_LOG')
+        result_path = config.get('INVENTORY_LOG_FILE_PLUGIN_RESULT_LOG')
 
         mode = 'a' if append else 'w'
         self.status = open(status_path, mode) if status_path else None

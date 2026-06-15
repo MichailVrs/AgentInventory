@@ -23,7 +23,7 @@ class EmailAlerter(AbstractAlerterPlugin):
             'message_template', 'email/alert.body.txt'
         )
         subject_prefix = self.config.setdefault(
-            'subject_prefix', '[Doorman]'
+            'subject_prefix', '[Inventory]'
         )
 
         params = {}

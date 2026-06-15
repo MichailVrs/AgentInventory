@@ -9,12 +9,12 @@ def parse_enroll_secret(request_json):
     """
     Парсит секрет и теги из запроса.
     """
-    enroll_secret_key = current_app.config.get('DOORMAN_ENROLL_OVERRIDE', 'enroll_secret')
+    enroll_secret_key = current_app.config.get('INVENTORY_ENROLL_OVERRIDE', 'enroll_secret')
     enroll_secret = request_json.get(enroll_secret_key)
     if not enroll_secret:
         return None, set()
 
-    delimiter = current_app.config.get('DOORMAN_ENROLL_SECRET_TAG_DELIMITER')
+    delimiter = current_app.config.get('INVENTORY_ENROLL_SECRET_TAG_DELIMITER')
     if delimiter:
         enroll_secret, _, enroll_tags_str = enroll_secret.partition(delimiter)
         enroll_tags = set([tag.strip() for tag in enroll_tags_str.split(delimiter)[:10]])
@@ -25,7 +25,7 @@ def parse_enroll_secret(request_json):
 
 def resolve_duplicate_node(host_identifier, remote_addr):
     """
-    Разрешает конфликт дублирующихся хостов, если DOORMAN_EXPECTS_UNIQUE_HOST_ID = True.
+    Разрешает конфликт дублирующихся хостов, если INVENTORY_EXPECTS_UNIQUE_HOST_ID = True.
     """
     if not host_identifier:
         return None
@@ -37,7 +37,7 @@ def resolve_duplicate_node(host_identifier, remote_addr):
             remote_addr, host_identifier, existing_node.enrolled_on
         )
 
-        if current_app.config['DOORMAN_EXPECTS_UNIQUE_HOST_ID'] is True:
+        if current_app.config['INVENTORY_EXPECTS_UNIQUE_HOST_ID'] is True:
             current_app.logger.info(
                 "%s - Unique host identification is true, %s already enrolled "
                 "returning existing node key %s",
@@ -55,7 +55,7 @@ def assign_node_tags(node, enroll_tags):
     Связывает теги с узлом (включая дефолтные теги).
     """
     enroll_tags = set(enroll_tags)
-    enroll_tags.update(current_app.config.get('DOORMAN_ENROLL_DEFAULT_TAGS', []))
+    enroll_tags.update(current_app.config.get('INVENTORY_ENROLL_DEFAULT_TAGS', []))
 
     for value in sorted((t.strip() for t in enroll_tags if t)):
         tag = Tag.query.filter_by(value=value).first()

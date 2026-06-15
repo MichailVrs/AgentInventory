@@ -1,7 +1,7 @@
 [
   {
     "name": "pack_cmdb_inventory_system_info",
-    "hostIdentifier": "offline-laptop-uuid-111",
+    "hostIdentifier": "FIKANTACOMP",
     "calendarTime": "Tue Jun  9 12:00:00 2026 UTC",
     "unixTime": 1781006400,
     "action": "added",
@@ -16,7 +16,7 @@
   },
   {
     "name": "pack_cmdb_inventory_os_version",
-    "hostIdentifier": "offline-laptop-uuid-111",
+    "hostIdentifier": "FIKANTACOMP",
     "calendarTime": "Tue Jun  9 12:00:00 2026 UTC",
     "unixTime": 1781006400,
     "action": "added",
@@ -31,7 +31,7 @@
   },
   {
     "name": "pack_cmdb_inventory_interface_addresses",
-    "hostIdentifier": "offline-laptop-uuid-111",
+    "hostIdentifier": "FIKANTACOMP",
     "calendarTime": "Tue Jun  9 12:00:00 2026 UTC",
     "unixTime": 1781006400,
     "action": "added",

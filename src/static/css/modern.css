@@ -412,3 +412,8 @@ code {
 .panel-default .panel-heading .glyphicon {
   color: #64748b !important;
 }
+
+/* Global margin adjustment for body content to prevent fixed navbar overlap */
+.body-content {
+  margin-top: 25px !important;
+}

@@ -59,12 +59,12 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         login_user(form.user, remember=form.remember.data)
-        flash(u'Welcome {0}.'.format(form.user.username), 'info')
+        flash(u'Добро пожаловать, {0}.'.format(form.user.username), 'info')
         current_app.logger.info("%s logged in", form.user.username)
         return safe_redirect(next, url_for('manage.index'))
 
     if form.errors:
-        flash(u'Invalid username or password.', 'danger')
+        flash(u'Неверное имя пользователя или пароль.', 'danger')
 
     return render_template('login.html', form=form)
 
@@ -83,7 +83,7 @@ def logout():
     response = redirect(url_for('users.login'))
 
     if username and not oauth:
-        flash(u"You have successfully logged out.", "info")
+        flash(u"Вы успешно вышли из системы.", "info")
         current_app.logger.info("%s logged out", username)
 
     # explicitly log the user out, and clear their remember me cookie
@@ -107,7 +107,7 @@ def oauth2callback():
         return redirect(url_for('users.logout'))
 
     login_user(user)
-    flash(u'Welcome {0}.'.format(user.first_name or user.username), 'info')
+    flash(u'Добро пожаловать, {0}.'.format(user.first_name or user.username), 'info')
     current_app.logger.info("%s logged in", user.username)
 
     return redirect(url_for('users.login'))

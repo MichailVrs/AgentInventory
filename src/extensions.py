@@ -24,7 +24,7 @@ class LogTee(object):
         from importlib import import_module
         from plugins import AbstractLogsPlugin
 
-        plugins = app.config.setdefault('DOORMAN_LOG_PLUGINS', [])
+        plugins = app.config.setdefault('INVENTORY_LOG_PLUGINS', [])
 
         for plugin in plugins:
             package, classname = plugin.rsplit('.', 1)
@@ -69,7 +69,7 @@ class RuleManager(object):
         from importlib import import_module
         from plugins import AbstractAlerterPlugin
 
-        alerters = self.app.config.get('DOORMAN_ALERTER_PLUGINS', {})
+        alerters = self.app.config.get('INVENTORY_ALERTER_PLUGINS', {})
 
         self.alerters = {}
         for name, (plugin, config) in alerters.items():

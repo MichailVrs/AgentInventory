@@ -42,14 +42,14 @@ def example_task(one, two):
 @celery.task()
 def notify_of_node_enrollment(node):
     '''
-    Create a result that gets run through our Rule Manager whenever a new
-    node is enrolled so that we may alert on this action.
+    Создает результат, который прогоняется через наш менеджер правил каждый раз,
+    когда регистрируется новый узел, чтобы мы могли предупредить об этом действии.
 
-    A rule can be created within inventory's rule manager to alert on
-    any of the following conditions:
-        - query name: inventory/tasks/node_enrolled
-        - action: triggered
-        - columns:
+    В менеджере правил можно создать правило для оповещения при
+    любом из следующих условий:
+        - имя запроса: inventory/tasks/node_enrolled
+        - действие: triggered
+        - колонки:
             - enrolled_on
             - last_ip
             - node_id
@@ -71,17 +71,17 @@ def notify_of_node_enrollment(node):
 @celery.task()
 def alert_when_node_goes_offline():
     '''
-    This task is intended to periodically comb the database to identify
-    nodes that have not posted results in some time, checked in for some
-    time, or have not posted results within some time of their last
-    checkin. The purpose of this task is to identify nodes that go offline,
-    or in some cases, nodes with corrupted osquery rocksdb databases.
+    Эта задача предназначена для периодического сканирования базы данных с целью выявления
+    узлов, которые не отправляли результаты в течение некоторого времени, не опрашивались
+    какое-то время или не отправляли результаты в течение некоторого времени после своего последнего
+    опроса. Цель этой задачи — выявить узлы, ушедшие в оффлайн, или, в некоторых случаях,
+    узлы с поврежденной базой данных RocksDB osquery.
 
-    A rule can be created within inventory's rules manager to alert on
-    any of the following conditions:
-        - query name: inventory/tasks/node_offline_checks
-        - action: triggered
-        - columns:
+    В менеджере правил системы можно создать правило для оповещения при
+    любом из следующих условий:
+        - имя запроса: inventory/tasks/node_offline_checks
+        - действие: triggered
+        - колонки:
             - since_last_result
             - since_last_result_days
             - since_last_result_seconds

@@ -4,6 +4,11 @@
     <div class="body-content">
         <div class="row">
             <div class="col-md-12">
+                <div style="margin-bottom: 20px;">
+                    <a href="{{ url_for('manage.distributed') }}" class="btn btn-default btn-sm" style="height: auto !important; padding: 6px 15px !important;">
+                        <i class="fa fa-chevron-left"></i> Назад к оперативным запросам
+                    </a>
+                </div>
                 <h1>{% if status %}{{ status }} {% endif %}результаты оперативного запроса {{ distributed_id }}</h1>
 
                 <p class="lead">{{ query.description or '' }}</p>

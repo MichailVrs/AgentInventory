@@ -1,4 +1,4 @@
-"""Add user table to support doorman and oauth authentication.
+"""Add user table to support inventory and oauth authentication.
 
 Revision ID: 0bc0a93ac867
 Revises: fd28e46e46a6

@@ -33,8 +33,8 @@ class SlackAlerter(AbstractAlerterPlugin):
             fields.extend(columns)
 
         attachments = [{
-            'pretext' : 'Doorman Alert: *%s*' % match.rule.name,
-            'fallback' : 'Doorman Alert: %s' % match.rule.name,
+            'pretext' : 'Inventory Alert: *%s*' % match.rule.name,
+            'fallback' : 'Inventory Alert: %s' % match.rule.name,
             'color' : self.color,
             'fields': fields,
             'mrkdwn_in':['text', 'pretext']

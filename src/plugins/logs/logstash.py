@@ -10,8 +10,8 @@ from utils import extract_results, quote
 
 class LogstashPlugin(AbstractLogsPlugin):
     def __init__(self, config):
-        self.path = path = config.get('DOORMAN_LOG_FILE_PLUGIN_JSON_LOG')
-        self.minimum_severity = config.get('DOORMAN_MINIMUM_OSQUERY_LOG_LEVEL')
+        self.path = path = config.get('INVENTORY_LOG_FILE_PLUGIN_JSON_LOG')
+        self.minimum_severity = config.get('INVENTORY_MINIMUM_OSQUERY_LOG_LEVEL')
         self.fp = open(path, 'a') if path else None
 
     @property

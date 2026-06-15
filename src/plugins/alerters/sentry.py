@@ -21,7 +21,7 @@ class SentryAlerter(AbstractAlerterPlugin):
 
         if name.startswith('pack'):
             try:
-                _, pack, query = name.split(current_app.config['DOORMAN_PACK_DELIMITER'])
+                _, pack, query = name.split(current_app.config['INVENTORY_PACK_DELIMITER'])
             except ValueError:
                 pack, query = None, name
         else:

@@ -72,7 +72,7 @@ def inject_models():
 @login_required
 def index():
     import datetime
-    checkin_interval = current_app.config['DOORMAN_CHECKIN_INTERVAL']
+    checkin_interval = current_app.config['INVENTORY_CHECKIN_INTERVAL']
     if isinstance(checkin_interval, (int, float)):
         checkin_interval = datetime.timedelta(seconds=checkin_interval)
     cutoff = datetime.datetime.utcnow() - checkin_interval
@@ -99,7 +99,7 @@ def index():
 @login_required
 def nodes(page=1, status='active'):
     import datetime
-    checkin_interval = current_app.config['DOORMAN_CHECKIN_INTERVAL']
+    checkin_interval = current_app.config['INVENTORY_CHECKIN_INTERVAL']
     if isinstance(checkin_interval, (int, float)):
         checkin_interval = datetime.timedelta(seconds=checkin_interval)
     cutoff = datetime.datetime.utcnow() - checkin_interval
@@ -129,8 +129,8 @@ def nodes_csv():
         'Активен',
     ]
 
-    column_names = map(itemgetter(0), current_app.config['DOORMAN_CAPTURE_NODE_INFO'])
-    labels = map(itemgetter(1), current_app.config['DOORMAN_CAPTURE_NODE_INFO'])
+    column_names = map(itemgetter(0), current_app.config['INVENTORY_CAPTURE_NODE_INFO'])
+    labels = map(itemgetter(1), current_app.config['INVENTORY_CAPTURE_NODE_INFO'])
     headers.extend(labels)
     headers = list(headers)
 
@@ -418,7 +418,8 @@ def add_query():
             query.packs = []
         query.save()
 
-        return redirect(url_for('manage.query', query_id=query.id))
+        flash(u'Запрос {0} успешно создан.'.format(query.name), 'success')
+        return redirect(url_for('manage.queries'))
 
     flash_errors(form)
     return render_template('query.html', form=form)
@@ -474,7 +475,7 @@ def upload_query():
         query.save()
 
         flash(u"Запрос {0} успешно импортирован!".format(query.name), 'success')
-        return redirect(url_for('manage.query', query_id=query.id))
+        return redirect(url_for('manage.queries'))
 
     flash_errors(form)
     return render_template('manage/upload_query.html', form=form)
@@ -617,7 +618,8 @@ def add_distributed():
         else:
             db.session.commit()
 
-        return redirect(url_for('manage.distributed', status='new'))
+        flash(u'Оперативный запрос успешно добавлен.', 'success')
+        return redirect(url_for('manage.distributed'))
 
     flash_errors(form)
     return render_template('distributed.html', form=form)

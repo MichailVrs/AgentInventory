@@ -21,7 +21,7 @@ def assemble_options(node):
     options = {}
 
     # https://github.com/facebook/osquery/issues/2048#issuecomment-219200524
-    if current_app.config['DOORMAN_EXPECTS_UNIQUE_HOST_ID']:
+    if current_app.config['INVENTORY_EXPECTS_UNIQUE_HOST_ID']:
         options['host_identifier'] = 'uuid'
     else:
         options['host_identifier'] = 'hostname'

@@ -8,7 +8,7 @@ from utils import DateTimeEncoder
 from .base import AbstractAlerterPlugin
 
 
-DEFAULT_KEY_FORMAT = 'doorman-incident-{count}'
+DEFAULT_KEY_FORMAT = 'inventory-incident-{count}'
 
 
 class PagerDutyAlerter(AbstractAlerterPlugin):
@@ -54,7 +54,7 @@ class PagerDutyAlerter(AbstractAlerterPlugin):
             'service_key': self.service_key,
             'incident_key': key,
             'description': description,
-            'client': 'Doorman',
+            'client': 'Inventory',
             "client_url": self.client_url,
             'details': details,
         }, cls=DateTimeEncoder)

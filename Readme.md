@@ -1,4 +1,4 @@
-# AgentInventory
+# Inventory
 
 ## Быстрый старт
 

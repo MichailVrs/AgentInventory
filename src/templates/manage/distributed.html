@@ -41,6 +41,232 @@
 
 {% endblock %}
 
+{% block css %}
+<style>
+.custom-multiselect-dropdown .dropdown-toggle:focus {
+    border-color: var(--accent-color, #3b82f6) !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+    outline: none !important;
+}
+.custom-multiselect-dropdown .search-input:focus {
+    border-color: var(--accent-color, #3b82f6) !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+    outline: none !important;
+}
+.multiselect-menu::-webkit-scrollbar {
+    width: 6px;
+}
+.multiselect-menu::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+.multiselect-menu::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+.multiselect-menu::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+.options-container::-webkit-scrollbar {
+    width: 6px;
+}
+.options-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+.options-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+.options-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+</style>
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    function convertToMultiselect(selectId, placeholderText) {
+        var select = document.getElementById(selectId);
+        if (!select) return;
+
+        // Hide original select
+        select.style.display = 'none';
+
+        // Create container wrapper
+        var wrapper = document.createElement('div');
+        wrapper.className = 'custom-multiselect-dropdown dropdown';
+        wrapper.style.position = 'relative';
+
+        // Create toggle button
+        var button = document.createElement('button');
+        button.className = 'btn btn-default dropdown-toggle form-control';
+        button.type = 'button';
+        button.setAttribute('data-toggle', 'dropdown');
+        button.setAttribute('aria-haspopup', 'true');
+        button.setAttribute('aria-expanded', 'false');
+        button.style.display = 'flex';
+        button.style.justify = 'space-between';
+        button.style.alignItems = 'center';
+        button.style.textAlign = 'left';
+        button.style.backgroundColor = '#ffffff';
+        button.style.border = '1px solid #cbd5e1';
+        button.style.borderRadius = '6px';
+        button.style.padding = '8px 12px';
+        button.style.height = 'auto';
+        button.style.minHeight = '38px';
+
+        var selectedSpan = document.createElement('span');
+        selectedSpan.className = 'dropdown-selected-text';
+        selectedSpan.style.overflow = 'hidden';
+        selectedSpan.style.textOverflow = 'ellipsis';
+        selectedSpan.style.whiteSpace = 'nowrap';
+        selectedSpan.style.marginRight = '8px';
+        selectedSpan.textContent = placeholderText;
+
+        var caretSpan = document.createElement('span');
+        caretSpan.className = 'caret';
+
+        button.appendChild(selectedSpan);
+        button.appendChild(caretSpan);
+
+        // Create dropdown menu
+        var menu = document.createElement('div');
+        menu.className = 'dropdown-menu multiselect-menu';
+        menu.style.width = '100%';
+        menu.style.padding = '8px';
+        menu.style.maxHeight = '300px';
+        menu.style.overflowY = 'auto';
+        menu.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+        menu.style.borderRadius = '8px';
+        menu.style.border = '1px solid #e2e8f0';
+        menu.style.backgroundColor = '#ffffff';
+
+        // Prevent dropdown from closing when clicking inside
+        menu.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+
+        // Search container
+        var searchDiv = document.createElement('div');
+        searchDiv.style.paddingBottom = '8px';
+        searchDiv.style.borderBottom = '1px solid #e2e8f0';
+        searchDiv.style.marginBottom = '8px';
+
+        var searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.className = 'form-control search-input';
+        searchInput.placeholder = 'Поиск...';
+        searchInput.style.height = '32px';
+        searchInput.style.fontSize = '13px';
+        searchInput.style.borderRadius = '4px';
+        searchInput.style.border = '1px solid #cbd5e1';
+
+        searchDiv.appendChild(searchInput);
+        menu.appendChild(searchDiv);
+
+        // Options container
+        var optionsContainer = document.createElement('div');
+        optionsContainer.className = 'options-container';
+        optionsContainer.style.overflowY = 'auto';
+        optionsContainer.style.maxHeight = '200px';
+
+        menu.appendChild(optionsContainer);
+
+        // Build list from original options
+        var checkboxes = [];
+        Array.from(select.options).forEach(function (option) {
+            var itemDiv = document.createElement('div');
+            itemDiv.className = 'checkbox';
+            itemDiv.style.margin = '4px 0';
+            itemDiv.style.padding = '6px 8px';
+            itemDiv.style.borderRadius = '4px';
+            itemDiv.style.transition = 'background-color 0.15s ease';
+
+            itemDiv.addEventListener('mouseenter', function() {
+                itemDiv.style.backgroundColor = '#f1f5f9';
+            });
+            itemDiv.addEventListener('mouseleave', function() {
+                itemDiv.style.backgroundColor = 'transparent';
+            });
+
+            var label = document.createElement('label');
+            label.style.display = 'flex';
+            label.style.alignItems = 'center';
+            label.style.cursor = 'pointer';
+            label.style.fontSize = '13px';
+            label.style.fontWeight = 'normal';
+            label.style.userSelect = 'none';
+            label.style.width = '100%';
+            label.style.margin = '0';
+            label.style.paddingLeft = '0';
+
+            var checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = option.value;
+            checkbox.checked = option.selected;
+            checkbox.style.margin = '0 10px 0 0';
+            checkbox.style.position = 'static';
+
+            var labelText = document.createTextNode(option.text);
+
+            label.appendChild(checkbox);
+            label.appendChild(labelText);
+            itemDiv.appendChild(label);
+            optionsContainer.appendChild(itemDiv);
+
+            checkboxes.push({
+                element: checkbox,
+                option: option,
+                text: option.text.toLowerCase(),
+                wrapper: itemDiv
+            });
+
+            checkbox.addEventListener('change', function () {
+                option.selected = checkbox.checked;
+                var event = new Event('change', { bubbles: true });
+                select.dispatchEvent(event);
+                updateSelectedText();
+            });
+        });
+
+        function updateSelectedText() {
+            var selected = checkboxes.filter(function (c) { return c.element.checked; });
+            if (selected.length === 0) {
+                selectedSpan.textContent = placeholderText;
+                selectedSpan.style.color = '#94a3b8';
+            } else {
+                var names = selected.map(function (c) { return c.option.text; });
+                selectedSpan.textContent = names.join(', ');
+                selectedSpan.style.color = '#1e293b';
+            }
+        }
+
+        searchInput.addEventListener('input', function () {
+            var filter = searchInput.value.toLowerCase();
+            checkboxes.forEach(function (c) {
+                if (c.text.indexOf(filter) > -1) {
+                    c.wrapper.style.display = '';
+                } else {
+                    c.wrapper.style.display = 'none';
+                }
+            });
+        });
+
+        updateSelectedText();
+
+        select.parentNode.insertBefore(wrapper, select.nextSibling);
+        wrapper.appendChild(button);
+        wrapper.appendChild(menu);
+    }
+
+    convertToMultiselect('nodes', 'Выберите агентов...');
+    convertToMultiselect('tags', 'Выберите метки...');
+});
+</script>
+{% endblock %}
+
 
 
 

@@ -114,7 +114,7 @@ def create_query_pack_from_upload(upload):
 
 
 def get_node_health(node):
-    checkin_interval = current_app.config['DOORMAN_CHECKIN_INTERVAL']
+    checkin_interval = current_app.config['INVENTORY_CHECKIN_INTERVAL']
     if isinstance(checkin_interval, (int, float)):
         checkin_interval = dt.timedelta(seconds=checkin_interval)
     if (dt.datetime.utcnow() - node.last_checkin) > checkin_interval:
@@ -192,7 +192,7 @@ def create_mock_db():
     for ddl in schema:
         mock_db.execute(ddl)
 
-    extra_schema = current_app.config.get('DOORMAN_EXTRA_SCHEMA', [])
+    extra_schema = current_app.config.get('INVENTORY_EXTRA_SCHEMA', [])
     for ddl in extra_schema:
         mock_db.execute(ddl)
 
@@ -221,7 +221,7 @@ def learn_from_result(result, node):
 
     capture_columns = set(
         map(itemgetter(0),
-            current_app.config['DOORMAN_CAPTURE_NODE_INFO']
+            current_app.config['INVENTORY_CAPTURE_NODE_INFO']
         )
     )
 
@@ -272,7 +272,7 @@ def extract_results(result):
     """
     extract_results will convert the incoming log data into a series of Fields,
     normalizing and/or aggregating both batch and event format into batch
-    format, which is used throughout the rest of doorman.
+    format, which is used throughout the rest of inventory.
     """
     if not result['data']:
         return
@@ -319,7 +319,7 @@ def flash_errors(form):
     '''http://flask.pocoo.org/snippets/12/'''
     for field, errors in form.errors.items():
         for error in errors:
-            message = u"Error in the {0} field - {1}".format(
+            message = u"Ошибка в поле «{0}»: {1}".format(
                 getattr(form, field).label.text, error
             )
             flash(message, 'danger')
@@ -364,7 +364,7 @@ class DateTimeEncoder(json.JSONEncoder):
 
 
 def render_column(value, column):
-    renders = current_app.config.get('DOORMAN_COLUMN_RENDER', {})
+    renders = current_app.config.get('INVENTORY_COLUMN_RENDER', {})
     if column not in renders:
         return value
 

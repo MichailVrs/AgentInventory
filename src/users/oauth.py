@@ -19,29 +19,29 @@ class OAuthLogin(object):
 
     @property
     def client_id(self):
-        return self.config.get('DOORMAN_OAUTH_CLIENT_ID')
+        return self.config.get('INVENTORY_OAUTH_CLIENT_ID')
 
     @property
     def client_secret(self):
-        return self.config.get('DOORMAN_OAUTH_CLIENT_SECRET')
+        return self.config.get('INVENTORY_OAUTH_CLIENT_SECRET')
 
     @property
     def base_url(self):
-        return self.config.get('DOORMAN_OAUTH_GOOGLE_BASE_URL')
+        return self.config.get('INVENTORY_OAUTH_GOOGLE_BASE_URL')
 
     @property
     def redirect_uri(self):
-        return url_for(self.config.get('DOORMAN_AUTH_REDIRECT_VIEW'),
+        return url_for(self.config.get('INVENTORY_AUTH_REDIRECT_VIEW'),
                        _scheme=self.config.get('PREFERRED_URL_SCHEME'),
                        _external=True)
 
     @property
     def token_url(self):
-        return self.config.get('DOORMAN_OAUTH_GOOGLE_TOKEN_URL')
+        return self.config.get('INVENTORY_OAUTH_GOOGLE_TOKEN_URL')
 
     @property
     def scope(self):
-        return self.config.get('DOORMAN_OAUTH_GOOGLE_SCOPE')
+        return self.config.get('INVENTORY_OAUTH_GOOGLE_SCOPE')
 
     def fetch_user(self):
         pass
@@ -62,33 +62,33 @@ class GoogleOAuthV2Login(OAuthLogin):
     def init_app(self, app):
         self.config = app.config
 
-        if not self.config['DOORMAN_OAUTH_CLIENT_ID']:
-            raise ValueError("DOORMAN_OAUTH_CLIENT_ID must be configured")
+        if not self.config['INVENTORY_OAUTH_CLIENT_ID']:
+            raise ValueError("INVENTORY_OAUTH_CLIENT_ID must be configured")
 
-        if not self.config['DOORMAN_OAUTH_CLIENT_SECRET']:
-            raise ValueError("DOORMAN_OAUTH_CLIENT_SECRET must be configured")
+        if not self.config['INVENTORY_OAUTH_CLIENT_SECRET']:
+            raise ValueError("INVENTORY_OAUTH_CLIENT_SECRET must be configured")
 
-        self.config.setdefault('DOORMAN_OAUTH_GOOGLE_BASE_URL',
+        self.config.setdefault('INVENTORY_OAUTH_GOOGLE_BASE_URL',
                                'https://accounts.google.com/o/oauth2/auth')
-        self.config.setdefault('DOORMAN_OAUTH_GOOGLE_TOKEN_URL',
+        self.config.setdefault('INVENTORY_OAUTH_GOOGLE_TOKEN_URL',
                                'https://www.googleapis.com/oauth2/v3/token')
-        self.config.setdefault('DOORMAN_AUTH_REDIRECT_VIEW',
+        self.config.setdefault('INVENTORY_AUTH_REDIRECT_VIEW',
                                'users.oauth2callback')
 
-        self.config.setdefault('DOORMAN_OAUTH_GOOGLE_SCOPE', ['email', 'profile'])
+        self.config.setdefault('INVENTORY_OAUTH_GOOGLE_SCOPE', ['email', 'profile'])
 
-        self.config.setdefault('DOORMAN_OAUTH_GOOGLE_ALLOWED_DOMAINS', [])
-        self.config.setdefault('DOORMAN_OAUTH_GOOGLE_ALLOWED_USERS', [])
+        self.config.setdefault('INVENTORY_OAUTH_GOOGLE_ALLOWED_DOMAINS', [])
+        self.config.setdefault('INVENTORY_OAUTH_GOOGLE_ALLOWED_USERS', [])
 
         app.oauth_provider = self
 
     @property
     def allowed_users(self):
-        return self.config.get('DOORMAN_OAUTH_GOOGLE_ALLOWED_USERS', [])
+        return self.config.get('INVENTORY_OAUTH_GOOGLE_ALLOWED_USERS', [])
 
     @property
     def allowed_domains(self):
-        return self.config.get('DOORMAN_OAUTH_GOOGLE_ALLOWED_DOMAINS', [])
+        return self.config.get('INVENTORY_OAUTH_GOOGLE_ALLOWED_DOMAINS', [])
 
     def get_authorize_url(self):
         provider = OAuth2Session(self.client_id,

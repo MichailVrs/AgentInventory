@@ -125,7 +125,7 @@ def logger(node=None):
     '''
     data = request.get_json()
     log_type = data['log_type']
-    log_level = current_app.config['DOORMAN_MINIMUM_OSQUERY_LOG_LEVEL']
+    log_level = current_app.config['INVENTORY_MINIMUM_OSQUERY_LOG_LEVEL']
 
     if current_app.debug:
         current_app.logger.debug(json.dumps(data, indent=2))

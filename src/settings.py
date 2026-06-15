@@ -13,20 +13,20 @@ class Config(object):
         pwd=os.environ.get('POSTGRES_PASSWORD'),
         host=os.environ.get('POSTGRES_HOST'),
         port=os.environ.get('POSTGRES_PORT','5432'),
-        dbname=os.environ.get('POSTGRES_DATABASE', 'doorman')
+        dbname=os.environ.get('POSTGRES_DATABASE', 'inventory')
     )
 
     ASSETS_DEBUG = False
-    # Set the following to ensure Celery workers can construct an
-    # external URL via `url_for`.
-    # SERVER_NAME = "doorman.domain.com"
+    # Установите следующее значение, чтобы воркеры Celery могли создавать
+    # внешние URL-адреса с помощью `url_for`.
+    # SERVER_NAME = "inventory.domain.com"
     PREFERRED_URL_SCHEME = 'https'
 
     ENROLL_SECRET = os.environ.get('ENROLL_SECRET', 'secret')
 
-    # PREFERRED_URL_SCHEME will not work without SERVER_NAME configured,
-    # so we need to use SSLify extension for that.
-    # By default it is enabled for all production configs.
+    # PREFERRED_URL_SCHEME не будет работать без настроенного SERVER_NAME,
+    # поэтому для этого нам нужно использовать расширение SSLify.
+    # По умолчанию оно включено для всех конфигураций production.
     ENFORCE_SSL = True
 
     DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
@@ -38,24 +38,24 @@ class Config(object):
 
     SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS', 'False').lower() in ('true', '1', 'yes')
 
-    # When osquery is configured to start with the command-line flag
-    # --host_identifier=uuid, set this value to True. This will allow
-    # nodes requesting to enroll / re-enroll to reuse the same node_key.
+    # Когда osquery настроен на запуск с флагом командной строки
+    # --host_identifier=uuid, установите это значение в True. Это позволит
+    # узлам, запрашивающим регистрацию / повторную регистрацию, повторно использовать тот же node_key.
     #
-    # When set to False, nodes that request the /enroll endpoint subsequently
-    # will have a new node_key generated, and a different corresponding
-    # node record in the database. This will result in stale node entries.
-    DOORMAN_EXPECTS_UNIQUE_HOST_ID = True
-    DOORMAN_CHECKIN_INTERVAL = dt.timedelta(seconds=3600)
-    DOORMAN_ENROLL_OVERRIDE = 'enroll_secret'
-    DOORMAN_PACK_DELIMITER = '/'
-    DOORMAN_MINIMUM_OSQUERY_LOG_LEVEL = 0
+    # Если установлено значение False, узлы, которые впоследствии запрашивают эндпоинт /enroll,
+    # получат новый node_key и соответствующую другую запись узла в базе данных.
+    # Это приведет к появлению устаревших записей узлов.
+    INVENTORY_EXPECTS_UNIQUE_HOST_ID = True
+    INVENTORY_CHECKIN_INTERVAL = dt.timedelta(seconds=3600)
+    INVENTORY_ENROLL_OVERRIDE = 'enroll_secret'
+    INVENTORY_PACK_DELIMITER = '/'
+    INVENTORY_MINIMUM_OSQUERY_LOG_LEVEL = 0
 
-    DOORMAN_ENROLL_SECRET_TAG_DELIMITER = None
-    DOORMAN_ENROLL_DEFAULT_TAGS = [
+    INVENTORY_ENROLL_SECRET_TAG_DELIMITER = None
+    INVENTORY_ENROLL_DEFAULT_TAGS = [
     ]
 
-    DOORMAN_CAPTURE_NODE_INFO = [
+    INVENTORY_CAPTURE_NODE_INFO = [
         ('computer_name', 'name'),
         ('hardware_vendor', 'make'),
         ('hardware_model', 'model'),
@@ -65,10 +65,10 @@ class Config(object):
         ('physical_memory', 'memory'),
     ]
 
-    # Doorman will validate queries against the expected set of tables from
-    # osquery.  If you use any custom extensions, you'll need to add the
-    # corresponding schema here so you can use them in queries.
-    DOORMAN_EXTRA_SCHEMA = [
+    # Система будет проверять запросы на соответствие ожидаемому набору таблиц из
+    # osquery. Если вы используете какие-либо пользовательские расширения, вам нужно добавить
+    # соответствующую схему сюда, чтобы вы могли использовать их в запросах.
+    INVENTORY_EXTRA_SCHEMA = [
         #'CREATE TABLE example_extension_table(thing1 INTEGER, thing2 TEXT);',
     ]
     BROKER_URL = "redis://{host}:{port}/0".format(
@@ -83,71 +83,70 @@ class Config(object):
     CELERY_TASK_SERIALIZER = 'djson'
     CELERYBEAT_SCHEDULE = {
         'alert-when-node-goes-offline': {
-            'task': 'doorman.tasks.alert_when_node_goes_offline',
+            'task': 'tasks.alert_when_node_goes_offline',
             'schedule': 86400,
         },
     }
 
-    # You can specify a set of custom logger plugins here.  These plugins will
-    # be called for every status or result log that is received, and can
-    # do what they wish with them.
-    DOORMAN_LOG_PLUGINS = [
+    # Здесь вы можете указать набор пользовательских плагинов логгера. Эти плагины будут
+    # вызываться для каждого полученного лога состояния или результата, и могут
+    # обрабатывать их по своему усмотрению.
+    INVENTORY_LOG_PLUGINS = [
         # 'plugins.logs.file.LogPlugin',
         # 'plugins.logs.logstash.LogstashPlugin',
     ]
 
-    # These are the configuration variables for the example logger plugin given
-    # above.  Uncomment these to start logging results or status logs to the
-    # given file.
-    # DOORMAN_LOG_FILE_PLUGIN_JSON_LOG = '/tmp/osquery.log'     # Default: do not log status/results to json log
-    # DOORMAN_LOG_FILE_PLUGIN_STATUS_LOG = '/tmp/status.log'     # Default: do not log status logs
-    # DOORMAN_LOG_FILE_PLUGIN_RESULT_LOG = '/tmp/result.log'     # Default: do not log results
-    # DOORMAN_LOG_FILE_PLUGIN_APPEND = True                      # Default: True
+    # Это конфигурационные переменные для примера плагина логгера, приведенного
+    # выше. Раскомментируйте их, чтобы начать логировать результаты или логи состояния в
+    # указанный файл.
+    # INVENTORY_LOG_FILE_PLUGIN_JSON_LOG = '/tmp/osquery.log'     # По умолчанию: не логировать в json-файл
+    # INVENTORY_LOG_FILE_PLUGIN_STATUS_LOG = '/tmp/status.log'     # По умолчанию: не логировать логи состояния
+    # INVENTORY_LOG_FILE_PLUGIN_RESULT_LOG = '/tmp/result.log'     # По умолчанию: не логировать результаты
+    # INVENTORY_LOG_FILE_PLUGIN_APPEND = True                      # По умолчанию: True
 
-    # You can specify a set of alerting plugins here.  These plugins can be
-    # configured in rules to trigger alerts to a particular location.  Each
-    # plugin consists of a full path to be imported, combined with some
-    # configuration for the plugin.  Note that, since an alerter can be
-    # configured multiple times with different names, we provide the
-    # configuration per-name.
-    DOORMAN_ALERTER_PLUGINS = {
+    # Здесь вы можете указать набор плагинов оповещения. Эти плагины могут быть
+    # настроены в правилах для отправки оповещений в определенное место. Каждый
+    # плагин состоит из полного пути для импорта в сочетании с некоторой
+    # конфигурацией для плагина. Обратите внимание, что, поскольку один и тот же оповещатель может быть
+    # настроен несколько раз под разными именами, мы предоставляем конфигурацию для каждого имени отдельно.
+    INVENTORY_ALERTER_PLUGINS = {
         'debug': ('plugins.alerters.debug.DebugAlerter', {
             'level': 'error',
         }),
 
-        # 'pagerduty-security': ('doorman.plugins.alerters.pagerduty.PagerDutyAlerter', {
+        # 'pagerduty-security': ('inventory.plugins.alerters.pagerduty.PagerDutyAlerter', {
         #     # Required
         #     'service_key': 'foobar',
 
         #     # Optional
-        #     'client_url': 'https://doorman.domain.com',
-        #     'key_format': 'doorman-security-{count}',
+        #     'client_url': 'https://inventory.domain.com',
+        #     'key_format': 'inventory-security-{count}',
         # }),
 
-        # 'email': ('doorman.plugins.alerters.emailer.EmailAlerter', {
+        # 'email': ('inventory.plugins.alerters.emailer.EmailAlerter', {
         #     # Required
         #     'recipients': [
         #         # 'security@example.com',
         #     ],
 
-        #     # Optional, see doorman/plugins/alerters/emailer.py for templates
-        #     'subject_prefix': '[Doorman]',
+        #     # Optional, see inventory/plugins/alerters/emailer.py for templates
+        #     'subject_prefix': '[Inventory]',
         #     'subject_template': '',
         #     'message_template': '',
 
         # }),
 
-        # 'sentry': ('doorman.plugins.alerters.sentry.SentryAlerter', {
+        # 'sentry': ('inventory.plugins.alerters.sentry.SentryAlerter', {
         #     'dsn': 'https://<key>:<secret>@app.getsentry.com/<project>',
         # }),
 
-        # 'slack': ('doorman.plugins.alerters.slack.SlackAlerter', {
+        # 'slack': ('inventory.plugins.alerters.slack.SlackAlerter', {
         #     # Required, create webhook here: https://my.slack.com/services/new/incoming-webhook/
-        #     'slack_webhook' : os.environ.get('SLACK_WEBHOOK_URL', ''),
+        #     'slack_webhook' : 'https://example.com/slack-webhook-placeholder',
 
         #     # Optional
         #     'printColumns': False,
-        #     # 'color': '#36a64f',
+        #     'color': '#36a64f',
         # })
     }
 
@@ -159,15 +158,14 @@ class Config(object):
     # MAIL_PASSWORD = None
     MAIL_DEFAULT_SENDER = 'inventory@localhost'
 
-    # Doorman uses the WatchedFileHandler in logging.handlers module.
-    # It is the responsibility of the system to rotate these logs on
-    # a periodic basis, as the file will grow indefinitely. See
+    # Система использует WatchedFileHandler из модуля logging.handlers.
+    # Система сама должна периодически ротировать эти логи, так как файл
+    # будет бесконечно расти. Для получения дополнительной информации см.
     # https://docs.python.org/dev/library/logging.handlers.html#watchedfilehandler
-    # for more information.
-    # Alternatively, you can set filename to '-' to log to stdout.
-    DOORMAN_LOGGING_FILENAME = '-'
-    DOORMAN_LOGGING_FORMAT = '%(asctime)s -  %(name)s - %(levelname)s - %(thread)d - %(message)s'
-    DOORMAN_LOGGING_LEVEL = 'WARNING'
+    # В качестве альтернативы вы можете установить имя файла в '-', чтобы логировать в stdout.
+    INVENTORY_LOGGING_FILENAME = '-'
+    INVENTORY_LOGGING_FORMAT = '%(asctime)s -  %(name)s - %(levelname)s - %(thread)d - %(message)s'
+    INVENTORY_LOGGING_LEVEL = 'WARNING'
 
     SESSION_COOKIE_SECURE = True
     REMEMBER_COOKIE_DURATION = dt.timedelta(days=30)
@@ -175,8 +173,8 @@ class Config(object):
     REMEMBER_COOKIE_SECURE = True
     REMEMBER_COOKIE_HTTPONLY = True
 
-    # see http://flask-login.readthedocs.io/en/latest/#session-protection
-    # only applicable when AUTH_METHOD = 'doorman'
+    # см. http://flask-login.readthedocs.io/en/latest/#session-protection
+    # применяется только когда AUTH_METHOD = 'inventory'
     SESSION_PROTECTION = "strong"
 
     BCRYPT_LOG_ROUNDS = 13
@@ -184,25 +182,25 @@ class Config(object):
     WTF_CSRF_ENABLED = True
     SESSION_COOKIE_SECURE = False
 
-    AUTH_METHOD = os.environ.get('AUTH_METHOD', 'internal')
+    AUTH_METHOD = None
     # AUTH_METHOD = 'internal'
     # AUTH_METHOD = 'google'
     # AUTH_METHOD = 'ldap'
 
-    DOORMAN_OAUTH_GOOGLE_ALLOWED_DOMAINS = [
+    INVENTORY_OAUTH_GOOGLE_ALLOWED_DOMAINS = [
     ]
 
-    DOORMAN_OAUTH_GOOGLE_ALLOWED_USERS = [
+    INVENTORY_OAUTH_GOOGLE_ALLOWED_USERS = [
     ]
 
-    DOORMAN_OAUTH_CLIENT_ID = ''
-    DOORMAN_OAUTH_CLIENT_SECRET = ''
+    INVENTORY_OAUTH_CLIENT_ID = ''
+    INVENTORY_OAUTH_CLIENT_SECRET = ''
 
-    # When using AUTH_METHOD = 'ldap', see
+    # При использовании AUTH_METHOD = 'ldap' см.
     # http://flask-ldap3-login.readthedocs.io/en/latest/configuration.html#core
-    # Note: not all configuration options are documented at the link
-    # provided above. A complete list of options can be groked by
-    # reviewing the the flask-ldap3-login code.
+    # Примечание: не все параметры конфигурации задокументированы по ссылке
+    # выше. Полный список опций можно изучить, просмотрев
+    # исходный код flask-ldap3-login.
 
     # LDAP_HOST = None
     # LDAP_PORT = 636
@@ -224,10 +222,10 @@ class Config(object):
     # LDAP_OPT_X_TLS_USE_VERSION = 3  # ssl.PROTOCOL_TLSv1
     # LDAP_OPT_X_TLS_VALID_NAMES = []
 
-    # To enable Sentry reporting, configure the following keys
+    # Чтобы включить отчеты Sentry, настройте следующие ключи
     # https://docs.getsentry.com/hosted/clients/python/integrations/flask/
     # SENTRY_DSN = 'https://<key>:<secret>@app.getsentry.com/<project>'
-    # SENTRY_INCLUDE_PATHS = ['doorman']
+    # SENTRY_INCLUDE_PATHS = ['inventory']
     # SENTRY_USER_ATTRS = ['username', 'first_name', 'last_name', 'email']
     #
     # https://docs.getsentry.com/hosted/clients/python/advanced/#sanitizing-data
@@ -251,7 +249,7 @@ class ProdConfig(Config):
     ENROLL_SECRET = [
 
     ]
-    DOORMAN_MINIMUM_OSQUERY_LOG_LEVEL = 1
+    INVENTORY_MINIMUM_OSQUERY_LOG_LEVEL = 1
 
     BROKER_URL = ''
     CELERY_RESULT_BACKEND = ''
@@ -259,8 +257,8 @@ class ProdConfig(Config):
 
 class DevConfig(Config):
     """
-    This class specifies a configuration that is suitable for running in
-    development.  It should not be used for running in production.
+    Этот класс определяет конфигурацию, подходящую для разработки.
+    Ее не следует использовать для запуска в рабочей среде (production).
     """
     ENV = 'dev'
     DEBUG = True
@@ -278,22 +276,22 @@ class DevConfig(Config):
 
 class TestConfig(Config):
     """
-    This class specifies a configuration that is used for our tests.
+    Этот класс определяет конфигурацию, которая используется для тестов.
     """
     TESTING = True
     DEBUG = True
 
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost:5432/doorman_test'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost:5432/inventory_test'
 
     WTF_CSRF_ENABLED = False
 
     ENROLL_SECRET = [
         'secret',
     ]
-    DOORMAN_EXPECTS_UNIQUE_HOST_ID = False
+    INVENTORY_EXPECTS_UNIQUE_HOST_ID = False
 
     AUTH_METHOD = None
 
-    DOORMAN_COLUMN_RENDER = {
+    INVENTORY_COLUMN_RENDER = {
         'computer_name': '<a href="https://{{ value | urlencode }}/">{{ value }}</a>'
     }

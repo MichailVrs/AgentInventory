@@ -211,7 +211,7 @@ class RuleForm(Form):
     conditions = HiddenJSONField(u'Условия')
 
     def set_choices(self):
-        alerter_ids = list(current_app.config.get('DOORMAN_ALERTER_PLUGINS', {}).keys())
+        alerter_ids = list(current_app.config.get('INVENTORY_ALERTER_PLUGINS', {}).keys())
         self.alerters.choices = [(a, a.title()) for a in alerter_ids]
 
 
