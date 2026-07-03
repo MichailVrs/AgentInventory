@@ -43,6 +43,49 @@ osquery_mock_db = threading.local()
 from config_assembler import assemble_configuration, assemble_distributed_queries
 
 
+RESULT_IDENTITY_KEYS = {
+    u'Система и ОС': (('uuid',), ('hostname',), ('computer_name',)),
+    u'Процессор': (('device_id',),),
+    u'Оперативная память': (('device_locator',), ('serial_number',), ('bank_locator', 'part_number')),
+    u'Физические диски': (('disk_index',), ('id',), ('serial',)),
+    u'Логические диски': (('device_id',),),
+    u'Установленное ПО': (
+        ('identifying_number',),
+        ('name', 'version', 'publisher'),
+        ('name', 'install_location'),
+    ),
+    u'Сетевые интерфейсы': (('interface',), ('mac',), ('friendly_name',)),
+    u'IP-адреса': (('interface', 'address'), ('address',),),
+    u'Маршруты': (('destination', 'netmask', 'gateway', 'interface'),),
+    u'Открытые порты': (('address', 'port', 'protocol', 'family'),),
+}
+
+
+def clean_result_name(name):
+    return (name or '').split('/')[-1]
+
+
+def result_identity(name, columns):
+    columns = columns or {}
+    query_name = clean_result_name(name)
+
+    for keys in RESULT_IDENTITY_KEYS.get(query_name, ()):
+        if all(columns.get(key) not in (None, '') for key in keys):
+            return {key: columns.get(key) for key in keys}
+
+    for keys in (
+        ('id',),
+        ('uuid',),
+        ('device_id',),
+        ('name',),
+        ('address',),
+    ):
+        if all(columns.get(key) not in (None, '') for key in keys):
+            return {key: columns.get(key) for key in keys}
+
+    return columns
+
+
 def create_query_pack_from_upload(upload):
     '''
     Create a pack and queries from a query pack file. **Note**, if a
@@ -261,8 +304,31 @@ def process_result(result, node):
         return
 
     for name, action, columns, timestamp, in extract_results(result):
+        if action == 'removed':
+            continue
+
+        identity = result_identity(name, columns)
+        existing = ResultLog.query.filter(
+            ResultLog.node_id == node.id,
+            ResultLog.name == name,
+        )
+        if identity == columns:
+            existing = existing.filter(ResultLog.columns == columns)
+        else:
+            existing = existing.filter(ResultLog.columns.contains(identity))
+        existing = existing.first()
+
+        if existing:
+            existing.update(
+                action='added',
+                columns=columns,
+                timestamp=timestamp,
+                commit=False,
+            )
+            continue
+
         yield ResultLog(name=name,
-                        action=action,
+                        action='added',
                         columns=columns,
                         timestamp=timestamp,
                         node_id=node.id)
@@ -305,7 +371,7 @@ def extract_results(result):
         elif 'snapshot' in entry:
             for columns in entry['snapshot']:
                 yield Field(name=name,
-                            action='snapshot',
+                            action='added',
                             columns=columns,
                             timestamp=timestamp)
 

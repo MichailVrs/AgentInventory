@@ -92,7 +92,7 @@ def parse_uploaded_query(file_data):
     platform = 'all'
     version = ''
     value = ''
-    removed = True
+    removed = False
     shard = None
 
     if filename.endswith('.json'):

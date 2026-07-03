@@ -3,7 +3,7 @@ import logging
 from sqlalchemy.exc import IntegrityError
 from database import db
 from models import CmdbObject, CmdbAttributeDict, CmdbValue
-from utils import extract_results
+from utils import extract_results, result_identity
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +45,35 @@ def load_attribute_cache(results):
     attributes = CmdbAttributeDict.query.filter(CmdbAttributeDict.name.in_(keys)).all()
     return {attr.name: attr for attr in attributes}
 
+def build_object_signature(object_type, columns):
+    return (
+        object_type,
+        tuple(sorted(
+            (key, str(value))
+            for key, value in result_identity(object_type, columns).items()
+        ))
+    )
+
+def load_existing_object_signatures(node_id, object_types):
+    if not object_types:
+        return set()
+
+    rows = db.session.query(CmdbObject, CmdbValue, CmdbAttributeDict) \
+        .join(CmdbValue, CmdbValue.object_id == CmdbObject.id) \
+        .join(CmdbAttributeDict, CmdbAttributeDict.id == CmdbValue.attribute_id) \
+        .filter(CmdbObject.node_id == node_id) \
+        .filter(CmdbObject.object_type.in_(object_types)) \
+        .all()
+
+    grouped = {}
+    for obj, value, attr in rows:
+        grouped.setdefault((obj.id, obj.object_type), {})[attr.name] = value.value
+
+    return {
+        build_object_signature(object_type, values): object_id
+        for (object_id, object_type), values in grouped.items()
+    }
+
 def replace_snapshot_objects(node_id, object_type, action, cleared_types):
     """
     Удаляет старые данные при обнаружении снимка (snapshot) и добавляет тип в cleared_types.
@@ -80,11 +109,36 @@ def get_or_create_attribute(key, attributes_cache):
     attributes_cache[key] = attr
     return attr
 
-def persist_cmdb_object(node_id, object_type, action, columns, attributes_cache):
+def update_cmdb_object_values(object_id, columns, attributes_cache):
+    values = db.session.query(CmdbValue, CmdbAttributeDict) \
+        .join(CmdbAttributeDict, CmdbAttributeDict.id == CmdbValue.attribute_id) \
+        .filter(CmdbValue.object_id == object_id) \
+        .all()
+    values_by_name = {attr.name: value for value, attr in values}
+
+    for key, value in columns.items():
+        attr = get_or_create_attribute(key, attributes_cache)
+        str_val = str(value)
+        existing = values_by_name.get(key)
+        if existing:
+            existing.value = str_val
+        else:
+            db.session.add(CmdbValue(
+                object_id=object_id,
+                attribute_id=attr.id,
+                value=str_val,
+            ))
+
+def persist_cmdb_object(node_id, object_type, action, columns, attributes_cache, existing_signatures):
     """
     Создает CmdbObject и сохраняет связанные значения CmdbValue.
     """
     if action not in ('added', 'snapshot'):
+        return
+
+    signature = build_object_signature(object_type, columns)
+    if signature in existing_signatures:
+        update_cmdb_object_values(existing_signatures[signature], columns, attributes_cache)
         return
 
     obj = CmdbObject(node_id=node_id, object_type=object_type)
@@ -96,6 +150,8 @@ def persist_cmdb_object(node_id, object_type, action, columns, attributes_cache)
         str_val = str(value)
         val = CmdbValue(object_id=obj.id, attribute_id=attr.id, value=str_val)
         db.session.add(val)
+
+    existing_signatures[signature] = obj.id
 
 def normalize_to_cmdb_service(result, node_id):
     """
@@ -112,6 +168,12 @@ def normalize_to_cmdb_service(result, node_id):
     logger.debug("Extracted %d results from batch", len(results))
 
     attributes_cache = load_attribute_cache(results)
+    object_types = {
+        extract_object_type(name)
+        for name, _, _, _ in results
+        if extract_object_type(name)
+    }
+    existing_signatures = load_existing_object_signatures(node_id, object_types)
 
     try:
         for name, action, columns, timestamp in results:
@@ -120,7 +182,14 @@ def normalize_to_cmdb_service(result, node_id):
                 continue
 
             replace_snapshot_objects(node_id, object_type, action, cleared_types)
-            persist_cmdb_object(node_id, object_type, action, columns, attributes_cache)
+            persist_cmdb_object(
+                node_id,
+                object_type,
+                action,
+                columns,
+                attributes_cache,
+                existing_signatures,
+            )
 
         db.session.commit()
     except Exception as e:

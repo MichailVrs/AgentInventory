@@ -7,7 +7,8 @@ from models import (
     DistributedQueryTask, 
     DistributedQuery, 
     CmdbValue, 
-    CmdbObject
+    CmdbObject,
+    Node
 )
 from application import create_app
 from settings import Config
@@ -43,6 +44,10 @@ with app.app_context():
     # 7. Clear CmdbObject
     print("Clearing CmdbObject...")
     num_objects = CmdbObject.query.delete()
+
+    # 8. Clear cached node inventory fields learned from agent results
+    print("Clearing Node.node_info...")
+    num_node_info = Node.query.update({Node.node_info: {}}, synchronize_session=False)
     
     db.session.commit()
     print("=== Data cleanup successfully finished! ===")
@@ -53,3 +58,4 @@ with app.app_context():
     print(f"DistributedQueries deleted: {num_dist_q}")
     print(f"CmdbValues deleted: {num_values}")
     print(f"CmdbObjects deleted: {num_objects}")
+    print(f"Node info cleared: {num_node_info}")

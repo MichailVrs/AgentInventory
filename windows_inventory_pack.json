@@ -1,0 +1,217 @@
+{
+  "platform": "windows",
+  "version": "1.0.0",
+  "description": "Windows inventory and baseline security pack for AgentInventory/osquery.",
+  "queries": {
+    "win_system_identity": {
+      "query": "SELECT hostname, computer_name, local_hostname, uuid, hardware_vendor, hardware_model, hardware_serial, cpu_brand, cpu_physical_cores, cpu_logical_cores, physical_memory FROM system_info;",
+      "interval": 86400,
+      "platform": "windows",
+      "description": "Базовая идентификация хоста: имя, UUID, модель, серийный номер, CPU и RAM.",
+      "value": "Hardware"
+    },
+    "win_os_version": {
+      "query": "SELECT name, version, build, platform, install_date FROM os_version;",
+      "interval": 86400,
+      "platform": "windows",
+      "description": "Версия Windows, build и дата установки ОС.",
+      "value": "Operating system"
+    },
+    "win_osquery_agent_info": {
+      "query": "SELECT version, config_hash, config_valid, start_time FROM osquery_info;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Версия и состояние самого osquery-агента.",
+      "value": "Agent"
+    },
+    "win_uptime": {
+      "query": "SELECT days, hours, minutes, total_seconds FROM uptime;",
+      "interval": 1800,
+      "platform": "windows",
+      "description": "Аптайм системы для контроля перезагрузок.",
+      "value": "Operating system"
+    },
+    "win_cpu_details": {
+      "query": "SELECT device_id, model, manufacturer, number_of_cores, logical_processors, address_width, current_clock_speed, max_clock_speed, socket_designation FROM cpu_info;",
+      "interval": 86400,
+      "platform": "windows",
+      "description": "Подробная информация о процессоре.",
+      "value": "Hardware"
+    },
+    "win_memory_modules": {
+      "query": "SELECT device_locator, bank_locator, manufacturer, serial_number, part_number, size, memory_type, form_factor, max_speed, configured_clock_speed FROM memory_devices;",
+      "interval": 86400,
+      "platform": "windows",
+      "description": "Модули оперативной памяти: слот, производитель, объем, серийный номер и скорость.",
+      "value": "Hardware"
+    },
+    "win_disk_inventory": {
+      "query": "SELECT disk_index, type, id, pnp_device_id, disk_size, manufacturer, hardware_model, name, serial, description FROM disk_info;",
+      "interval": 86400,
+      "platform": "windows",
+      "description": "Физические диски: модель, серийный номер, объем и описание.",
+      "value": "Storage"
+    },
+    "win_logical_drives": {
+      "query": "SELECT device_id, type, free_space, size, file_system, boot_partition FROM logical_drives;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Логические диски и свободное место.",
+      "value": "Storage"
+    },
+    "win_video_info": {
+      "query": "SELECT manufacturer, model, series, video_mode, driver, driver_version, driver_date FROM video_info;",
+      "interval": 86400,
+      "platform": "windows",
+      "description": "Видеоадаптеры и версии драйверов.",
+      "value": "Hardware"
+    },
+    "win_bios_info": {
+      "query": "SELECT name, value FROM wmi_bios_info;",
+      "interval": 86400,
+      "platform": "windows",
+      "description": "BIOS/UEFI сведения из WMI.",
+      "value": "Hardware"
+    },
+    "win_network_addresses": {
+      "query": "SELECT interface, friendly_name, address, mask, type FROM interface_addresses WHERE address NOT IN ('127.0.0.1', '::1', '0.0.0.0');",
+      "interval": 1800,
+      "platform": "windows",
+      "description": "IP-адреса сетевых интерфейсов.",
+      "value": "Network"
+    },
+    "win_network_interfaces": {
+      "query": "SELECT interface, friendly_name, description, mac, manufacturer, connection_id, connection_status, enabled, physical_adapter, dhcp_enabled, dhcp_server, dns_server_search_order, link_speed FROM interface_details;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Сетевые адаптеры: MAC, статус, DHCP/DNS и скорость линка.",
+      "value": "Network"
+    },
+    "win_routes": {
+      "query": "SELECT destination, netmask, gateway, source, interface, metric, type FROM routes;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Таблица маршрутизации Windows.",
+      "value": "Network"
+    },
+    "win_installed_programs": {
+      "query": "SELECT name, version, publisher, install_date, install_location, identifying_number FROM programs;",
+      "interval": 21600,
+      "platform": "windows",
+      "description": "Установленные программы Windows.",
+      "value": "Software"
+    },
+    "win_chocolatey_packages": {
+      "query": "SELECT name, version, summary, author, license, path FROM chocolatey_packages;",
+      "interval": 21600,
+      "platform": "windows",
+      "description": "Пакеты Chocolatey, если Chocolatey используется на хосте.",
+      "value": "Software"
+    },
+    "win_patches": {
+      "query": "SELECT hotfix_id, caption, description, installed_by, installed_on FROM patches;",
+      "interval": 21600,
+      "platform": "windows",
+      "description": "Установленные обновления Windows и hotfix-пакеты.",
+      "value": "Patches"
+    },
+    "win_local_users": {
+      "query": "SELECT uid, username, description, directory, type, uuid FROM users;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Локальные пользователи.",
+      "value": "Identity"
+    },
+    "win_local_groups": {
+      "query": "SELECT gid, groupname, group_sid, comment FROM groups;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Локальные группы.",
+      "value": "Identity"
+    },
+    "win_user_group_membership": {
+      "query": "SELECT u.username, g.groupname, g.group_sid FROM users u JOIN user_groups ug ON u.uid = ug.uid JOIN groups g ON ug.gid = g.gid;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Членство пользователей в локальных группах.",
+      "value": "Identity"
+    },
+    "win_logged_in_users": {
+      "query": "SELECT type, user, tty, host, time, pid FROM logged_in_users;",
+      "interval": 600,
+      "platform": "windows",
+      "description": "Текущие интерактивные и удаленные входы пользователей.",
+      "value": "Identity"
+    },
+    "win_services": {
+      "query": "SELECT name, display_name, status, start_type, pid, path, module_path, user_account FROM services;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Службы Windows, их статус, тип запуска и учетная запись.",
+      "value": "Services"
+    },
+    "win_startup_items": {
+      "query": "SELECT name, path, args, type, source, status, username FROM startup_items;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Элементы автозагрузки.",
+      "value": "Startup"
+    },
+    "win_scheduled_tasks": {
+      "query": "SELECT name, action, path, enabled, state, hidden, last_run_time, next_run_time, last_run_code FROM scheduled_tasks;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Планировщик заданий Windows.",
+      "value": "Startup"
+    },
+    "win_listening_ports": {
+      "query": "SELECT lp.address, lp.port, lp.protocol, lp.family, lp.pid, p.name AS process_name, p.path AS process_path FROM listening_ports lp LEFT JOIN processes p ON lp.pid = p.pid WHERE lp.port != 0;",
+      "interval": 300,
+      "platform": "windows",
+      "description": "Открытые локальные порты и процессы-владельцы.",
+      "value": "Network security"
+    },
+    "win_top_processes": {
+      "query": "SELECT pid, parent, name, path, cmdline, state, threads, handle_count, resident_size, percent_processor_time, elapsed_time FROM processes ORDER BY percent_processor_time DESC LIMIT 50;",
+      "interval": 600,
+      "platform": "windows",
+      "description": "Топ активных процессов по CPU.",
+      "value": "Processes"
+    },
+    "win_drivers": {
+      "query": "SELECT device_name, image, description, service, version, class, provider, manufacturer, signed FROM drivers;",
+      "interval": 86400,
+      "platform": "windows",
+      "description": "Драйверы устройств и признак подписи.",
+      "value": "Drivers"
+    },
+    "win_usb_devices": {
+      "query": "SELECT usb_address, usb_port, vendor, vendor_id, model, model_id, serial, class, removable FROM usb_devices;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "USB-устройства, видимые системе.",
+      "value": "Peripheral devices"
+    },
+    "win_shared_resources": {
+      "query": "SELECT name, path, type, status, description FROM shared_resources;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Сетевые ресурсы и общие папки Windows.",
+      "value": "Shares"
+    },
+    "win_bitlocker_info": {
+      "query": "SELECT device_id, drive_letter, persistent_volume_id, conversion_status, protection_status, encryption_method FROM bitlocker_info;",
+      "interval": 3600,
+      "platform": "windows",
+      "description": "Состояние BitLocker по томам.",
+      "value": "Security"
+    },
+    "win_certificates": {
+      "query": "SELECT common_name, subject, issuer, ca, self_signed, not_valid_before, not_valid_after, signing_algorithm, key_algorithm, key_strength, sha1, path FROM certificates;",
+      "interval": 86400,
+      "platform": "windows",
+      "description": "Сертификаты из хранилищ Windows.",
+      "value": "Certificates"
+    }
+  }
+}

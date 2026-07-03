@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 
 {% block css %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='public/css/dataTables.bootstrap.min.css') }}"/>
 <style>
     .dataTables_wrapper .dataTables_filter {
         float: right;
@@ -125,8 +124,6 @@
 {% endblock %}
 
 {% block js %}
-<script type="text/javascript" src="{{ url_for('static', filename='public/js/jquery.dataTables.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='public/js/dataTables.bootstrap.min.js') }}"></script>
 <script>
     $(document).ready(function() {
         if ($('#cmdbTable').length > 0) {

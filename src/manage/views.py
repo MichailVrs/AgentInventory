@@ -50,6 +50,12 @@ from services.offline_import import (
     import_grouped_records,
     parse_offline_records,
 )
+from services.excel_csv import (
+    EXCEL_CSV_DELIMITER,
+    EXCEL_CSV_LINETERMINATOR,
+    EXCEL_CSV_PREAMBLE_BYTES,
+    format_csv_value,
+)
 from services.query_uploads import UploadQueryError, parse_uploaded_query
 
 
@@ -125,7 +131,8 @@ def nodes_csv():
         'Идентификатор хоста',
         'Дата регистрации',
         'Последний сеанс связи',
-        'Последний IP-адрес',
+        'IP-адрес агента',
+        'IP подключения',
         'Активен',
     ]
 
@@ -135,20 +142,25 @@ def nodes_csv():
     headers = list(headers)
 
     bio = BytesIO()
-    bio.write(b'\xef\xbb\xbf')  # Добавляем UTF-8 BOM для совместимости с Excel
-    writer = csv.writer(bio)
+    bio.write(EXCEL_CSV_PREAMBLE_BYTES)
+    writer = csv.writer(
+        bio,
+        delimiter=EXCEL_CSV_DELIMITER,
+        lineterminator=EXCEL_CSV_LINETERMINATOR,
+    )
     writer.writerow(headers)
 
     for node in Node.query:
         row = [
-            node.display_name,
-            node.host_identifier,
-            node.enrolled_on,
-            node.last_checkin,
-            node.last_ip,
-            node.is_active,
+            format_csv_value(node.display_name),
+            format_csv_value(node.host_identifier),
+            format_csv_value(node.enrolled_on),
+            format_csv_value(node.last_checkin),
+            format_csv_value(node.agent_ip),
+            format_csv_value(node.last_ip),
+            format_csv_value(node.is_active),
         ]
-        row.extend([node.node_info.get(column, '') for column in column_names])
+        row.extend([format_csv_value(node.node_info.get(column, '')) for column in column_names])
         writer.writerow(row)
 
     bio.seek(0)
@@ -762,7 +774,7 @@ def tags():
     tags = dict((t.value, {}) for t in Tag.query.all())
 
     if (request.headers.get('X-Requested-With') == 'XMLHttpRequest'):
-        return jsonify(tags=tags.keys())
+        return jsonify(tags=list(tags.keys()))
 
     baseq = db.session.query(Tag.value, db.func.count(Tag.id))
 

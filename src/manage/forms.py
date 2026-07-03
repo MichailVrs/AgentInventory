@@ -103,7 +103,7 @@ class QueryForm(Form):
     version = StringField(u'Версия')
     description = TextAreaField(u'Описание')
     value = TextAreaField(u'Значение')
-    removed = BooleanField(u'Записывать удалённые строки?', default=True)
+    removed = BooleanField(u'Записывать удалённые строки?', default=False)
     packs = SelectField(u'Пакеты', default='', choices=[
     ])
     tags = TextAreaField(u'Метки')

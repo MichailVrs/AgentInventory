@@ -4,7 +4,7 @@
                             <th>Агент</th>
                             <th>Статус</th>
                             <th>Ключ</th>
-                            <th>IP-адрес</th>
+                            <th>IP-адрес агента</th>
                             <th>Регистрация</th>
                             <th>Активность</th>
                             <th>Метки</th>
@@ -26,7 +26,13 @@
                                 {% endif %}
                             </td>
                             <td class="text-muted small"><code>{{ node.node_key[:8] }}...</code></td>
-                            <td><code>{{ node.last_ip | default('', true) }}</code></td>
+                            <td>
+                                {% if node.agent_ip %}
+                                    <code>{{ node.agent_ip }}</code>
+                                {% else %}
+                                    <span class="text-muted">Ожидание данных</span>
+                                {% endif %}
+                            </td>
                             <td class="text-muted small" title="{{ node.enrolled_on }}">{{ node.enrolled_on | relative_time }}</td>
                             <td class="text-muted small" title="{{ node.last_checkin }}">{{ node.last_checkin | relative_time }}</td>
                             <td>

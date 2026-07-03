@@ -32,7 +32,17 @@
                             {% endfor %}
                             {% endif %}
                             <tr>
-                                <th style="text-align: left; font-weight: 600;">Последний IP-адрес</th>
+                                <th style="text-align: left; font-weight: 600;">IP-адрес агента</th>
+                                <td>
+                                    {% if node.agent_ip %}
+                                        <code>{{ node.agent_ip }}</code>
+                                    {% else %}
+                                        <span class="text-muted" style="font-style: italic; color: #94a3b8;">Ожидание опроса...</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="text-align: left; font-weight: 600;">IP подключения</th>
                                 <td><code>{{ node.last_ip | default('', true) }}</code></td>
                             </tr>
                             <tr>

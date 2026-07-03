@@ -36,7 +36,7 @@
                                         data-uri="{{ url_for('manage.delete_tag', tag_value=tag) }}"
                                         data-confirm="Вы уверены, что хотите удалить эту метку? Это действие нельзя отменить."
                                         style="padding: 0; color: #d9534f; margin-right: 5px;">
-                                    <span class="glyphicon-trash glyphicon glyphicon-trash" aria-hidden="true" data-uri="{{ url_for('manage.delete_tag', tag_value=tag) }}" style="font-size: 14px;"></span>
+                                    <span class="glyphicon-trash glyphicon glyphicon-trash" aria-hidden="true" style="font-size: 14px;"></span>
                                 </button>
                                 <span class="label">
                                     <a href="{{ url_for('manage.get_tag', tag_value=tag) }}">{{ tag }}</a>

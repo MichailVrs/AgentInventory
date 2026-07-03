@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
-import csv
 import io
 from database import db
 from models import CmdbAttributeDict, CmdbObject, CmdbValue, Node
+from services.excel_csv import (
+    EXCEL_CSV_PREAMBLE,
+    excel_csv_writer,
+    format_csv_value,
+)
 
 def generate_custom_report(selected_attribute_ids):
     """Генерирует сводный отчет по списку выбранных ID атрибутов."""
@@ -65,17 +69,17 @@ def build_custom_export_csv(selected_attribute_ids):
     report = generate_custom_report(selected_attribute_ids)
     
     output = io.StringIO()
-    output.write('\ufeff')  # BOM для Microsoft Excel
+    output.write(EXCEL_CSV_PREAMBLE)
     
     ru_fieldnames = [u'Узел', u'Последний сеанс связи'] + report['columns']
     
-    writer = csv.writer(output)
+    writer = excel_csv_writer(output)
     writer.writerow(ru_fieldnames)
 
     for row in report['records']:
-        line = [row['node_name'], row['last_checkin']]
+        line = [format_csv_value(row['node_name']), format_csv_value(row['last_checkin'])]
         for col in report['columns']:
-            line.append(row[col])
+            line.append(format_csv_value(row[col]))
         writer.writerow(line)
 
     return output.getvalue()

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime as dt
+import ipaddress
 import string
 import uuid
 
@@ -118,7 +119,7 @@ class Query(SurrogatePK, Model):
     version = Column(db.String)
     description = Column(db.String)
     value = Column(db.String)
-    removed = Column(db.Boolean, nullable=False, default=True)
+    removed = Column(db.Boolean, nullable=False, default=False)
     shard = Column(db.Integer)
 
     packs = relationship(
@@ -135,7 +136,7 @@ class Query(SurrogatePK, Model):
     )
 
     def __init__(self, name, query=None, sql=None, interval=3600, platform=None,
-                 version=None, description=None, value=None, removed=True,
+                 version=None, description=None, value=None, removed=False,
                  shard=None, **kwargs):
         self.name = name
         self.sql = query or sql
@@ -264,6 +265,94 @@ class Node(SurrogatePK, Model):
             return self.node_info['computer_name']
         else:
             return self.host_identifier
+
+    @property
+    def agent_ips(self):
+        session = db.session.object_session(self) or db.session
+        rows = session.query(ResultLog) \
+            .filter(ResultLog.node_id == self.id) \
+            .filter(ResultLog.columns.has_key('address')) \
+            .order_by(ResultLog.timestamp.desc()) \
+            .limit(500) \
+            .all()
+        distributed_rows = session.query(DistributedQueryResult) \
+            .join(DistributedQueryTask) \
+            .filter(DistributedQueryTask.node_id == self.id) \
+            .order_by(DistributedQueryResult.timestamp.desc()) \
+            .limit(500) \
+            .all()
+
+        candidates = {}
+        for columns in self._agent_ip_columns(rows, distributed_rows):
+            address = columns.get('address')
+            if not address or 'interface' not in columns or 'mask' not in columns:
+                continue
+            if not self._is_displayable_agent_ip(address):
+                continue
+
+            candidates.setdefault(address, self._agent_ip_score(columns))
+
+        return [
+            address
+            for address, _ in sorted(candidates.items(), key=lambda item: (item[1], item[0]))
+        ]
+
+    @property
+    def agent_ip(self):
+        ips = self.agent_ips
+        return ips[0] if ips else ''
+
+    @staticmethod
+    def _agent_ip_columns(result_rows, distributed_rows):
+        for row in result_rows:
+            if row.action == 'removed':
+                continue
+            yield row.columns or {}
+
+        for row in distributed_rows:
+            yield row.columns or {}
+
+    @staticmethod
+    def _is_displayable_agent_ip(address):
+        try:
+            ip = ipaddress.ip_address(address)
+        except ValueError:
+            return False
+
+        return not (
+            ip.is_loopback or
+            ip.is_unspecified or
+            ip.is_multicast or
+            ip.is_link_local
+        )
+
+    @staticmethod
+    def _agent_ip_score(columns):
+        address = columns.get('address') or ''
+        interface_text = ' '.join(
+            str(columns.get(key) or '')
+            for key in ('interface', 'friendly_name', 'type')
+        ).lower()
+        virtual_markers = (
+            'docker', 'veth', 'virtualbox', 'vmware', 'hyper-v', 'vethernet',
+            'bluetooth', 'loopback', 'npcap', 'wsl', 'teredo', 'isatap',
+            'tunnel', 'pseudo',
+        )
+
+        score = 0
+        if any(marker in interface_text for marker in virtual_markers):
+            score += 100
+        if address == '172.18.0.1':
+            score += 100
+
+        try:
+            ip = ipaddress.ip_address(address)
+            if ip.version == 6:
+                score += 20
+        except ValueError:
+            score += 200
+
+        return score
 
     @property
     def packs(self):

@@ -12,8 +12,9 @@ def assemble_configuration(node):
     configuration = {}
     configuration['options'] = assemble_options(node)
     configuration['file_paths'] = assemble_file_paths(node)
-    configuration['schedule'] = assemble_schedule(node)
-    configuration['packs'] = assemble_packs(node)
+    packs, packed_query_ids = assemble_packs(node)
+    configuration['schedule'] = assemble_schedule(node, exclude_query_ids=packed_query_ids)
+    configuration['packs'] = packs
     return configuration
 
 
@@ -37,19 +38,41 @@ def assemble_file_paths(node):
     return file_paths
 
 
-def assemble_schedule(node):
+def assemble_schedule(node, exclude_query_ids=None):
+    exclude_query_ids = exclude_query_ids or set()
     schedule = {}
-    for query in node.queries.options(db.lazyload('*')):
+    for query in node.queries.options(db.lazyload('*')).order_by(Query.name):
+        if query.id in exclude_query_ids or query.name in schedule:
+            continue
         schedule[query.name] = query.to_dict()
     return schedule
 
 
 def assemble_packs(node):
     packs = {}
+    seen_query_ids = set()
     for pack in node.packs.join(querypacks).join(Query) \
-        .options(db.contains_eager(Pack.queries)).all():
-        packs[pack.name] = pack.to_dict()
-    return packs
+        .options(db.contains_eager(Pack.queries)) \
+        .order_by(Pack.name, Query.name).all():
+        pack_data = packs.setdefault(pack.name, {
+            'platform': pack.platform,
+            'version': pack.version,
+            'shard': pack.shard,
+            'discovery': [],
+            'queries': {},
+        })
+
+        for query in pack.queries:
+            if query.id in seen_query_ids:
+                continue
+
+            seen_query_ids.add(query.id)
+            if 'discovery' in (t.value for t in query.tags):
+                pack_data['discovery'].append(query.sql)
+            elif query.name not in pack_data['queries']:
+                pack_data['queries'][query.name] = query.to_dict()
+
+    return packs, seen_query_ids
 
 
 def assemble_distributed_queries(node):

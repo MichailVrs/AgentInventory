@@ -118,7 +118,7 @@
             <thead>
               <tr>
                 <th>Идентификатор агента</th>
-                <th>IP-адрес</th>
+                <th>IP-адрес агента</th>
                 <th>Дата регистрации</th>
                 <th>Последняя активность</th>
                 <th>Статус</th>
@@ -128,7 +128,7 @@
               {% for node in recent_nodes %}
               <tr>
                 <td><a href="{{ url_for('manage.get_node', node_id=node.id) }}">{{ node.display_name }}</a></td>
-                <td>{{ node.last_ip | default('-', true) }}</td>
+                <td>{{ node.agent_ip or 'Ожидание данных' }}</td>
                 <td class="text-muted small" title="{{ node.enrolled_on }}">{{ node.enrolled_on | relative_time }}</td>
                 <td class="text-muted small" title="{{ node.last_checkin }}">{{ node.last_checkin | relative_time }}</td>
                 <td>

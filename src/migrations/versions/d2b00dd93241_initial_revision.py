@@ -76,34 +76,34 @@ def upgrade():
     sa.UniqueConstraint('guid')
     )
     op.create_table('file_path_tags',
-    sa.Column('tag.id', sa.Integer(), nullable=True),
-    sa.Column('file_path.id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['file_path.id'], ['file_path.id'], ),
-    sa.ForeignKeyConstraint(['tag.id'], ['tag.id'], )
+    sa.Column('tag_id', sa.Integer(), nullable=True),
+    sa.Column('file_path_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['file_path_id'], ['file_path.id'], ),
+    sa.ForeignKeyConstraint(['tag_id'], ['tag.id'], )
     )
     op.create_table('node_tags',
-    sa.Column('tag.id', sa.Integer(), nullable=True),
-    sa.Column('node.id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['node.id'], ['node.id'], ),
-    sa.ForeignKeyConstraint(['tag.id'], ['tag.id'], )
+    sa.Column('tag_id', sa.Integer(), nullable=True),
+    sa.Column('node_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['node_id'], ['node.id'], ),
+    sa.ForeignKeyConstraint(['tag_id'], ['tag.id'], )
     )
     op.create_table('pack_tags',
-    sa.Column('tag.id', sa.Integer(), nullable=True),
-    sa.Column('pack.id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['pack.id'], ['pack.id'], ),
-    sa.ForeignKeyConstraint(['tag.id'], ['tag.id'], )
+    sa.Column('tag_id', sa.Integer(), nullable=True),
+    sa.Column('pack_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['pack_id'], ['pack.id'], ),
+    sa.ForeignKeyConstraint(['tag_id'], ['tag.id'], )
     )
     op.create_table('query_packs',
-    sa.Column('pack.id', sa.Integer(), nullable=True),
-    sa.Column('query.id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['pack.id'], ['pack.id'], ),
-    sa.ForeignKeyConstraint(['query.id'], ['query.id'], )
+    sa.Column('pack_id', sa.Integer(), nullable=True),
+    sa.Column('query_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['pack_id'], ['pack.id'], ),
+    sa.ForeignKeyConstraint(['query_id'], ['query.id'], )
     )
     op.create_table('query_tags',
-    sa.Column('tag.id', sa.Integer(), nullable=True),
-    sa.Column('query.id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['query.id'], ['query.id'], ),
-    sa.ForeignKeyConstraint(['tag.id'], ['tag.id'], )
+    sa.Column('tag_id', sa.Integer(), nullable=True),
+    sa.Column('query_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['query_id'], ['query.id'], ),
+    sa.ForeignKeyConstraint(['tag_id'], ['tag.id'], )
     )
     op.create_table('result_log',
     sa.Column('id', sa.Integer(), nullable=False),

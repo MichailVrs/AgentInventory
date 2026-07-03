@@ -35,11 +35,11 @@ def upgrade():
         sa.UniqueConstraint('guid')
     )
 
-    cursor = op.get_bind().execute("""
+    cursor = op.get_bind().execute(sa.text("""
         SELECT id, status, retrieved, guid, node_id
         FROM distributed_query
         ORDER BY id;"""
-    )
+    ))
     results = map(DistributedQueryTask._make, cursor.fetchall())
     distributed_query_tasks = [dict(
         distributed_query_id=r.id,
@@ -78,7 +78,7 @@ def downgrade():
         'guid', 'status', 'sql', 'timestamp', 'not_before',
         'retrieved', 'node_id'])
 
-    cursor = op.get_bind().execute("""
+    cursor = op.get_bind().execute(sa.text("""
         SELECT DISTINCT t.id AS task_id, q.id AS query_id,
             t.guid, t.status, q.sql, q.timestamp, q.not_before,
             t.timestamp AS retrieved, t.node_id
@@ -86,7 +86,7 @@ def downgrade():
         INNER JOIN distributed_query_task t
         ON q.id = t.distributed_query_id
         ORDER BY t.id;
-    """)
+    """))
 
     results = map(DistributedQuery._make, cursor.fetchall())
 

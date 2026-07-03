@@ -32,7 +32,11 @@ Write-Host "4. Database migration (db-migrate)..."
 docker compose run --rm server /venv/bin/python manage.py db upgrade
 docker compose down
 
-Write-Host "5. Starting system..."
+Write-Host "5. Building web assets..."
+docker compose run --rm server /venv/bin/python manage.py assets build
+docker compose down
+
+Write-Host "6. Starting system..."
 docker compose up -d
 
 Write-Host "Done! System is running in background."

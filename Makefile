@@ -1,7 +1,11 @@
-init: data-remove create-ssl-certificate images-build-and-pull   db-migrate
+init: data-remove create-ssl-certificate images-build-and-pull   db-migrate assets-build
 
 db-migrate:
 	docker compose run --rm server /venv/bin/python manage.py db upgrade
+	docker compose down
+
+assets-build:
+	docker compose run --rm server /venv/bin/python manage.py assets build
 	docker compose down
 
 create-ssl-certificate:
