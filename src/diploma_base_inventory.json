@@ -1,0 +1,77 @@
+{
+  "platform": "windows",
+  "version": "1.0.0",
+  "description": "Демонстрационный пакет для защиты диплома: сбор сведений о программном обеспечении, аппаратной конфигурации ПК и сетевых параметрах Windows.",
+  "queries": {
+    "Система и ОС": {
+      "query": "SELECT s.hostname, s.computer_name, s.local_hostname, s.uuid, s.hardware_vendor, s.hardware_model, s.hardware_serial, s.cpu_brand, s.cpu_physical_cores, s.cpu_logical_cores, s.physical_memory, o.name AS os_name, o.version AS os_version, o.build AS os_build, o.platform, o.install_date FROM system_info s, os_version o;",
+      "interval": 20,
+      "platform": "windows",
+      "value": "Железо",
+      "description": "Общие сведения о компьютере: имя, UUID, производитель, модель, серийный номер, процессор, объем ОЗУ и версия Windows."
+    },
+    "Процессор": {
+      "query": "SELECT device_id, model, manufacturer, number_of_cores, logical_processors, address_width, current_clock_speed, max_clock_speed, socket_designation FROM cpu_info;",
+      "interval": 20,
+      "platform": "windows",
+      "value": "Железо",
+      "description": "Информация о процессоре: модель, производитель, количество ядер, логические процессоры и рабочие частоты."
+    },
+    "Оперативная память": {
+      "query": "SELECT m.device_locator, m.bank_locator, m.manufacturer, m.serial_number, m.part_number, m.size AS module_size_mb, s.physical_memory AS total_physical_memory, CAST(s.physical_memory / 1048576 AS INTEGER) AS total_physical_memory_mb, (SELECT COUNT(*) FROM memory_devices) AS memory_modules_count, m.memory_type, m.form_factor, m.max_speed, m.configured_clock_speed FROM memory_devices m, system_info s;",
+      "interval": 20,
+      "platform": "windows",
+      "value": "Железо",
+      "description": "Модули оперативной памяти: слот, производитель, серийный номер, объем модуля, общий объем ОЗУ, количество модулей, тип и частота."
+    },
+    "Физические диски": {
+      "query": "SELECT disk_index, type, id, pnp_device_id, disk_size, manufacturer, hardware_model, name, serial, description FROM disk_info;",
+      "interval": 20,
+      "platform": "windows",
+      "value": "Железо",
+      "description": "Физические накопители ПК: тип, производитель, модель, серийный номер, объем и описание устройства."
+    },
+    "Логические диски": {
+      "query": "SELECT device_id, type, free_space, size, file_system, boot_partition FROM logical_drives;",
+      "interval": 20,
+      "platform": "windows",
+      "value": "Железо",
+      "description": "Логические разделы и тома: буква диска, файловая система, общий объем и свободное место."
+    },
+    "Установленное ПО": {
+      "query": "SELECT name, version, publisher, install_date, install_location, identifying_number FROM programs;",
+      "interval": 20,
+      "platform": "windows",
+      "value": "ПО",
+      "description": "Список установленного программного обеспечения Windows: название, версия, издатель, дата установки и путь установки."
+    },
+    "Сетевые интерфейсы": {
+      "query": "SELECT interface, friendly_name, description, mac, manufacturer, connection_id, connection_status, enabled, physical_adapter, dhcp_enabled, dhcp_server, dns_server_search_order, link_speed FROM interface_details;",
+      "interval": 20,
+      "platform": "windows",
+      "value": "Сеть",
+      "description": "Сетевые адаптеры: имя интерфейса, MAC-адрес, производитель, статус подключения, DHCP, DNS и скорость линка."
+    },
+    "IP-адреса": {
+      "query": "SELECT interface, friendly_name, address, mask, type FROM interface_addresses WHERE address NOT IN ('127.0.0.1', '::1', '0.0.0.0');",
+      "interval": 20,
+      "platform": "windows",
+      "value": "Сеть",
+      "description": "IP-адреса сетевых интерфейсов без loopback-адресов: интерфейс, адрес, маска и тип адреса."
+    },
+    "Маршруты": {
+      "query": "SELECT destination, netmask, gateway, source, interface, metric, type FROM routes;",
+      "interval": 20,
+      "platform": "windows",
+      "value": "Сеть",
+      "description": "Таблица маршрутизации: назначение, маска, шлюз, интерфейс, метрика и тип маршрута."
+    },
+    "Открытые порты": {
+      "query": "SELECT lp.address, lp.port, lp.protocol, lp.family, lp.pid, p.name AS process_name, p.path AS process_path FROM listening_ports lp LEFT JOIN processes p ON lp.pid = p.pid WHERE lp.port != 0;",
+      "interval": 20,
+      "platform": "windows",
+      "value": "Сеть",
+      "description": "Локальные слушающие порты и процессы-владельцы для базовой оценки сетевой поверхности ПК."
+    }
+  }
+}

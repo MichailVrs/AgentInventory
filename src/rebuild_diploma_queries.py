@@ -26,153 +26,30 @@ from settings import Config
 from utils import validate_osquery_query
 
 
+import json
+import os
+
+# Get directory of this script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+json_path = os.path.join(script_dir, 'diploma_base_inventory.json')
+
+with open(json_path, 'r', encoding='utf-8') as f:
+    pack_data = json.load(f)
+
 INTERVAL_SECONDS = 20
 PACK_TAG = u"диплом"
 PACK_NAME = u"Диплом: базовая инвентаризация"
-PACK_DESCRIPTION = (
-    u"Демонстрационный пакет для защиты диплома: сбор сведений о программном "
-    u"обеспечении, аппаратной конфигурации ПК и сетевых параметрах Windows."
-)
+PACK_DESCRIPTION = pack_data.get('description', u'')
 
-QUERY_SPECS = [
-    {
-        "name": u"Система и ОС",
-        "category": u"Железо",
-        "description": (
-            u"Общие сведения о компьютере: имя, UUID, производитель, модель, "
-            u"серийный номер, процессор, объем ОЗУ и версия Windows."
-        ),
-        "sql": (
-            "SELECT s.hostname, s.computer_name, s.local_hostname, s.uuid, "
-            "s.hardware_vendor, s.hardware_model, s.hardware_serial, "
-            "s.cpu_brand, s.cpu_physical_cores, s.cpu_logical_cores, "
-            "s.physical_memory, o.name AS os_name, o.version AS os_version, "
-            "o.build AS os_build, o.platform, o.install_date "
-            "FROM system_info s, os_version o;"
-        ),
-    },
-    {
-        "name": u"Процессор",
-        "category": u"Железо",
-        "description": (
-            u"Информация о процессоре: модель, производитель, количество ядер, "
-            u"логические процессоры и рабочие частоты."
-        ),
-        "sql": (
-            "SELECT device_id, model, manufacturer, number_of_cores, "
-            "logical_processors, address_width, current_clock_speed, "
-            "max_clock_speed, socket_designation FROM cpu_info;"
-        ),
-    },
-    {
-        "name": u"Оперативная память",
-        "category": u"Железо",
-        "description": (
-            u"Модули оперативной памяти: слот, производитель, серийный номер, "
-            u"объем модуля, общий объем ОЗУ, количество модулей, тип и частота."
-        ),
-        "sql": (
-            "SELECT m.device_locator, m.bank_locator, m.manufacturer, "
-            "m.serial_number, m.part_number, m.size AS module_size_mb, "
-            "s.physical_memory AS total_physical_memory, "
-            "CAST(s.physical_memory / 1048576 AS INTEGER) AS total_physical_memory_mb, "
-            "(SELECT COUNT(*) FROM memory_devices) AS memory_modules_count, "
-            "m.memory_type, m.form_factor, m.max_speed, "
-            "m.configured_clock_speed FROM memory_devices m, system_info s;"
-        ),
-    },
-    {
-        "name": u"Физические диски",
-        "category": u"Железо",
-        "description": (
-            u"Физические накопители ПК: тип, производитель, модель, серийный "
-            u"номер, объем и описание устройства."
-        ),
-        "sql": (
-            "SELECT disk_index, type, id, pnp_device_id, disk_size, "
-            "manufacturer, hardware_model, name, serial, description "
-            "FROM disk_info;"
-        ),
-    },
-    {
-        "name": u"Логические диски",
-        "category": u"Железо",
-        "description": (
-            u"Логические разделы и тома: буква диска, файловая система, общий "
-            u"объем и свободное место."
-        ),
-        "sql": (
-            "SELECT device_id, type, free_space, size, file_system, "
-            "boot_partition FROM logical_drives;"
-        ),
-    },
-    {
-        "name": u"Установленное ПО",
-        "category": u"ПО",
-        "description": (
-            u"Список установленного программного обеспечения Windows: название, "
-            u"версия, издатель, дата установки и путь установки."
-        ),
-        "sql": (
-            "SELECT name, version, publisher, install_date, install_location, "
-            "identifying_number FROM programs;"
-        ),
-    },
-    {
-        "name": u"Сетевые интерфейсы",
-        "category": u"Сеть",
-        "description": (
-            u"Сетевые адаптеры: имя интерфейса, MAC-адрес, производитель, "
-            u"статус подключения, DHCP, DNS и скорость линка."
-        ),
-        "sql": (
-            "SELECT interface, friendly_name, description, mac, manufacturer, "
-            "connection_id, connection_status, enabled, physical_adapter, "
-            "dhcp_enabled, dhcp_server, dns_server_search_order, link_speed "
-            "FROM interface_details;"
-        ),
-    },
-    {
-        "name": u"IP-адреса",
-        "category": u"Сеть",
-        "description": (
-            u"IP-адреса сетевых интерфейсов без loopback-адресов: интерфейс, "
-            u"адрес, маска и тип адреса."
-        ),
-        "sql": (
-            "SELECT interface, friendly_name, address, mask, type "
-            "FROM interface_addresses "
-            "WHERE address NOT IN ('127.0.0.1', '::1', '0.0.0.0');"
-        ),
-    },
-    {
-        "name": u"Маршруты",
-        "category": u"Сеть",
-        "description": (
-            u"Таблица маршрутизации: назначение, маска, шлюз, интерфейс, "
-            u"метрика и тип маршрута."
-        ),
-        "sql": (
-            "SELECT destination, netmask, gateway, source, interface, metric, "
-            "type FROM routes;"
-        ),
-    },
-    {
-        "name": u"Открытые порты",
-        "category": u"Сеть",
-        "description": (
-            u"Локальные слушающие порты и процессы-владельцы для базовой "
-            u"оценки сетевой поверхности ПК."
-        ),
-        "sql": (
-            "SELECT lp.address, lp.port, lp.protocol, lp.family, lp.pid, "
-            "p.name AS process_name, p.path AS process_path "
-            "FROM listening_ports lp "
-            "LEFT JOIN processes p ON lp.pid = p.pid "
-            "WHERE lp.port != 0;"
-        ),
-    },
-]
+QUERY_SPECS = []
+for q_name, q_val in pack_data.get('queries', {}).items():
+    QUERY_SPECS.append({
+        "name": q_name,
+        "category": q_val.get('value', u''),
+        "description": q_val.get('description', u''),
+        "sql": q_val.get('query', u'')
+    })
+
 
 
 def get_or_create_tag(value):
