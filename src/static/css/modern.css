@@ -1,8 +1,8 @@
 /* =============================================================================
-   Modern UI Premium Design System & Typography
+   Современная дизайн-система UI и типографика
    ========================================================================== */
 
-/* Glyphicons Local Font-Face Override (eliminates 404 woff2 log errors in closed networks) */
+/* Локальное переопределение Font-Face для Glyphicons: устраняет ошибки 404 для woff2 в закрытых сетях */
 @font-face {
   font-family: 'Glyphicons Halflings';
   src: url('/static/libs/bootstrap/dist/fonts/glyphicons-halflings-regular.eot');
@@ -12,15 +12,15 @@
        url('/static/libs/bootstrap/dist/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 }
 
-/* Base animations */
+/* Базовые анимации */
 html { background-color: #ffffff; } 
 body {
   opacity: 0;
   animation: fadeIn 0.5s ease-out 0.1s forwards;
-  padding-top: 80px; /* Space for fixed navbar */
+  padding-top: 80px; /* Место для фиксированной навигационной панели */
   color: #1e293b !important;
   background-color: #f8fafc;
-  /* Air-gapped UI typography: uses modern local system font stack for flawless offline execution */
+  /* Типографика для изолированного UI: современный локальный системный стек шрифтов для корректной оффлайн-работы */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji" !important;
 }
 
@@ -29,7 +29,7 @@ body {
   to { opacity: 1; }
 }
 
-/* Modern panels */
+/* Современные панели */
 .panel {
   border: none !important;
   border-radius: 12px !important;
@@ -45,7 +45,7 @@ body {
   background-color: #ffffff !important;
 }
 
-/* Modern buttons */
+/* Современные кнопки */
 .btn {
   border-radius: 8px !important;
   font-weight: 500 !important;
@@ -58,7 +58,7 @@ body {
   box-shadow: 0 4px 8px rgba(0,0,0,0.08);
 }
 
-/* Modern form controls */
+/* Современные элементы форм */
 .form-control {
   border-radius: 8px !important;
   box-shadow: none !important;
@@ -71,7 +71,7 @@ body {
   box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
 }
 
-/* Premium Table Styling Overhaul */
+/* Обновленное оформление таблиц */
 .table {
   background-color: #ffffff !important;
   border-collapse: collapse !important;
@@ -134,7 +134,7 @@ body {
   margin-bottom: 30px !important;
 }
 
-/* Modernized Navigation tokens */
+/* Обновленные токены навигации */
 :root {
   --accent-color: #0284c7;
   --text-muted: #475569;
@@ -143,7 +143,7 @@ body {
   --nav-bg: #0f172a;
 }
 
-/* Stronger contrast and muted texts */
+/* Усиленный контраст и приглушенный текст */
 .text-muted, small, .small, .help-block, p.text-muted { color: #475569 !important; }
 h1 small, h2 small, h3 small, h1 .small, h2 .small, h3 .small { color: #64748b !important; }
 .table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th { background-color: #f8fafc; }
@@ -183,7 +183,7 @@ h1 small, h2 small, h3 small, h1 .small, h2 .small, h3 .small { color: #64748b !
   background: transparent !important;
 }
 
-/* Enhanced TagsInput CSS */
+/* Улучшенные стили TagsInput */
 .bootstrap-tagsinput {
   border: 1px solid #cbd5e1;
   border-radius: 6px;
@@ -256,7 +256,7 @@ td .bootstrap-tagsinput, p .bootstrap-tagsinput {
   opacity: 1 !important;
 }
 
-/* Responsive & Mobile Polish */
+/* Адаптивность и мобильная полировка */
 @media (max-width: 991px) {
   .table, .table-condensed {
     display: block !important;
@@ -305,7 +305,7 @@ td .bootstrap-tagsinput, p .bootstrap-tagsinput {
   }
 }
 
-/* Query Builder boundaries */
+/* Границы конструктора запросов */
 .query-builder {
   overflow-x: auto !important;
   max-width: 100% !important;
@@ -372,7 +372,7 @@ code {
   }
 }
 
-/* Dashboard status cards colors */
+/* Цвета карточек статуса на панели */
 .panel-primary .panel-heading {
   background-color: #f0f9ff !important;
   color: #0369a1 !important;
@@ -413,7 +413,7 @@ code {
   color: #64748b !important;
 }
 
-/* Global margin adjustment for body content to prevent fixed navbar overlap */
+/* Глобальная корректировка отступов основного содержимого, чтобы избежать перекрытия фиксированной навигацией */
 .body-content {
   margin-top: 25px !important;
 }

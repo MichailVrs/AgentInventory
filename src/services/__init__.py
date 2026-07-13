@@ -1,3 +1,2 @@
 # -*- coding: utf-8 -*-
-"""Application services shared by Flask views, API handlers, and tasks."""
-
+"""Сервисы приложения, общие для Flask views, API-обработчиков и задач."""

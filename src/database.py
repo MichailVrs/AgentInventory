@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Database module, including the SQLAlchemy database object and DB-related utilities."""
+"""Модуль базы данных: объект SQLAlchemy и связанные с БД утилиты."""
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB, INET  # noqa
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
@@ -8,7 +8,7 @@ from compat import basestring
 from extensions import db
 
 
-# Alias common SQLAlchemy names
+# Псевдонимы для часто используемых имен SQLAlchemy.
 Column = db.Column
 Table = db.Table
 ForeignKey = db.ForeignKey
@@ -18,43 +18,43 @@ Index = db.Index
 
 
 class CRUDMixin(object):
-    """Mixin that adds convenience methods for CRUD (create, read, update, delete) operations."""
+    """Миксин с удобными методами для CRUD-операций."""
 
     @classmethod
     def create(cls, **kwargs):
-        """Create a new record and save it the database."""
+        """Создает новую запись и сохраняет ее в базе данных."""
         instance = cls(**kwargs)
         return instance.save()
 
     def update(self, commit=True, **kwargs):
-        """Update specific fields of a record."""
+        """Обновляет указанные поля записи."""
         for attr, value in kwargs.items():
             setattr(self, attr, value)
         return commit and self.save() or self
 
     def save(self, commit=True):
-        """Save the record."""
+        """Сохраняет запись."""
         db.session.add(self)
         if commit:
             db.session.commit()
         return self
 
     def delete(self, commit=True):
-        """Remove the record from the database."""
+        """Удаляет запись из базы данных."""
         db.session.delete(self)
         return commit and db.session.commit()
 
 
 class Model(CRUDMixin, db.Model):
-    """Base model class that includes CRUD convenience methods."""
+    """Базовый класс модели с удобными CRUD-методами."""
 
     __abstract__ = True
 
 
-# From Mike Bayer's "Building the app" talk
+# Из доклада Майка Байера "Building the app".
 # https://speakerdeck.com/zzzeek/building-the-app
 class SurrogatePK(object):
-    """A mixin that adds a surrogate integer 'primary key' column named ``id`` to any declarative-mapped class."""
+    """Миксин, добавляющий суррогатный целочисленный первичный ключ ``id``."""
 
     __table_args__ = {'extend_existing': True}
 
@@ -62,7 +62,7 @@ class SurrogatePK(object):
 
     @classmethod
     def get_by_id(cls, record_id):
-        """Get record by ID."""
+        """Возвращает запись по ID."""
         if any(
                 (isinstance(record_id, basestring) and record_id.isdigit(),
                  isinstance(record_id, (int, float))),
@@ -72,9 +72,9 @@ class SurrogatePK(object):
 
 
 def reference_col(tablename, nullable=False, pk_name='id', **kwargs):
-    """Column that adds primary key foreign key reference.
+    """Колонка, добавляющая внешний ключ на первичный ключ.
 
-    Usage: ::
+    Использование: ::
 
         category_id = reference_col('category')
         category = relationship('Category', backref='categories')

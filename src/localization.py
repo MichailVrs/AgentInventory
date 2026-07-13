@@ -2,7 +2,7 @@
 import six
 
 CMDB_RU_TRANSLATIONS = {
-    # Object Types
+    # Типы объектов.
     'system_info': 'Сведения о системе',
     'os_version': 'Операционная система',
     'local_users': 'Учетные записи',
@@ -21,7 +21,7 @@ CMDB_RU_TRANSLATIONS = {
     'bitlocker': 'Шифрование BitLocker',
     'storage_mounts': 'Точки монтирования',
 
-    # Actions
+    # Действия.
     'added': 'Добавлено',
     'removed': 'Удалено',
 }
@@ -32,4 +32,3 @@ def ru_translate(value):
     if isinstance(value, six.string_types):
         return CMDB_RU_TRANSLATIONS.get(value, value)
     return value
-

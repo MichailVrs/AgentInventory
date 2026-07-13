@@ -34,7 +34,7 @@ class LogPlugin(AbstractLogsPlugin):
         if self.status is None:
             return
 
-        # Write each status log on a different line
+        # Записываем каждый лог состояния в отдельную строку.
         try:
             for item in data.get('data', []):
                 fields = {}
@@ -44,7 +44,7 @@ class LogPlugin(AbstractLogsPlugin):
                     'message':  item.get('message', ''),
                     'severity': item.get('severity', ''),
                     'filename': item.get('filename', ''),
-                    'version': item.get('version'),  # be null
+                    'version': item.get('version'),  # может быть null
                 })
 
                 if 'created' in item:
@@ -61,7 +61,7 @@ class LogPlugin(AbstractLogsPlugin):
         if self.result is None:
             return
 
-        # Process each result individually
+        # Обрабатываем каждый результат отдельно.
         try:
             for item in extract_results(data):
                 fields = {}
@@ -76,7 +76,7 @@ class LogPlugin(AbstractLogsPlugin):
 
                 base = self.join_fields(fields)
 
-                # Write each added/removed entry on a different line
+                # Записываем каждую добавленную/удаленную запись в отдельную строку.
                 curr_fields = {'result_type': item.action}
                 for key, val in item.columns.items():
                     curr_fields['_'.join([item.action, key])] = val

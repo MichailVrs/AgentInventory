@@ -15,8 +15,8 @@ RuleMatch = namedtuple('RuleMatch', ['rule', 'result', 'node'])
 
 class Network(object):
     """
-    A grouping of condition nodes.  Contains the base logic for running the
-    conditions on some input.
+    Группа узлов условий. Содержит базовую логику запуска условий
+    на входных данных.
     """
     def __init__(self):
         self.conditions = {}
@@ -24,13 +24,14 @@ class Network(object):
 
     def make_condition(self, klass, *args, **kwargs):
         """
-        Memoizing constructor for conditions.  Uses the input config as the cache key.
+        Конструктор условий с мемоизацией. Использует входную конфигурацию
+        как ключ кэша.
         """
-        # Calculate the memoization key.  We do this by creating a 3-tuple of
-        # (condition class name, args, kwargs).  There is some nuance to this,
-        # though: we need to put args/kwargs in the right format.  We
-        # recursively iterate through lists/dicts and convert them to tuples,
-        # and extract the memoization key from instances of BaseCondition.
+        # Вычисляем ключ мемоизации как кортеж из трех элементов:
+        # (имя класса условия, args, kwargs). Здесь есть нюанс: args/kwargs
+        # нужно привести к правильному формату. Мы рекурсивно обходим списки
+        # и словари, преобразуем их в кортежи и извлекаем ключ мемоизации
+        # из экземпляров BaseCondition.
         def tupleify(obj):
             if isinstance(obj, BaseCondition):
                 return obj.__network_memo_key
@@ -51,12 +52,12 @@ class Network(object):
         if key in self.conditions:
             return self.conditions[key]
 
-        # Instantiate the condition class.  Also, save the memoization key on
-        # the class, so it can be retrieved (above).
+        # Создаем экземпляр класса условия. Также сохраняем ключ мемоизации
+        # в экземпляре, чтобы его можно было получить выше.
         inst = klass(*args, **kwargs)
         inst.__network_memo_key = key
 
-        # Save the condition
+        # Сохраняем условие.
         self.conditions[key] = inst
         return inst
 
@@ -66,42 +67,42 @@ class Network(object):
     def process(self, entry, node):
         input = RuleInput(result_log=entry, node=node)
 
-        # Step 1: Mark all conditions as 'not evaluated'.
+        # Шаг 1: помечаем все условия как еще не вычисленные.
         for condition in self.conditions.values():
             condition.evaluated = False
 
-        # Step 2: For each alerter condition, we tell it to 'process' a new
-        # input.  This will propagate "upstream" to each condition node and
-        # evaluate the dependent chain of conditions.  We then check if the
-        # condition has triggered.
+        # Шаг 2: для каждого условия оповещения передаем новый вход на
+        # обработку. Это поднимется вверх по цепочке к каждому узлу условия
+        # и вычислит зависимую цепочку условий. Затем проверяем,
+        # сработало ли условие.
         alerts = set()
         for (alert, upstream, rule_id) in self.alert_conditions:
             if upstream.run(input):
                 alerts.add((alert, rule_id))
 
-        # Step 3: Return all alerts to the caller.
+        # Шаг 3: возвращаем вызывающему коду все оповещения.
         return alerts
 
     def parse_query(self, query, alerters=None, rule_id=None):
         """
-        Parse a query output from jQuery.QueryBuilder.
+        Разбирает результат jQuery.QueryBuilder.
         """
         def parse_condition(d):
             op = d['operator']
             value = d['value']
             
-            # If this is a "column operator" - i.e. operating on a particular
-            # value in a column - then we need to give a custom extraction
-            # function that knows how to get this value from a query.
+            # Если это "оператор колонки", то есть операция над конкретным
+            # значением в колонке, передаем пользовательскую функцию извлечения,
+            # которая знает, как получить это значение из запроса.
             column_name = None
             if d['field'] == 'column':
-                # Strip 'column_' prefix to get the 'real' operator.
+                # Убираем префикс 'column_', чтобы получить реальный оператор.
                 op = op[7:]
 
                 if isinstance(value, six.string_types):
                     column_name = value
                 else:
-                    # The 'value' array will look like ['column_name', 'actual value']
+                    # Массив 'value' будет выглядеть как ['column_name', 'фактическое значение'].
                     column_name, value = value
 
             klass = OPERATOR_MAP.get(op)
@@ -131,10 +132,10 @@ class Network(object):
             
             return parse_condition(d)
 
-        # The root is always a group
+        # Корневой элемент всегда является группой.
         root = parse_group(query)
 
-        # Add alert condition(s) that trigger when this group does
+        # Добавляем условия оповещения, которые срабатывают вместе с этой группой.
         if alerters is not None:
             for alert in alerters:
                 self.make_alert_condition(alert, root, rule_id)
@@ -142,8 +143,8 @@ class Network(object):
 
 class BaseCondition(object):
     """
-    Base class for conditions.  Contains the logic for adding a dependency to a
-    condition and pretty-printing one.
+    Базовый класс условий. Содержит логику добавления зависимости
+    к условию и его человекочитаемого представления.
     """
     def __init__(self):
         self.evaluated = False
@@ -155,7 +156,7 @@ class BaseCondition(object):
 
     def run(self, input):
         """
-        Runs this condition if it hasn't been evaluated.
+        Запускает условие, если оно еще не было вычислено.
         """
         assert isinstance(input, RuleInput)
 
@@ -172,7 +173,7 @@ class BaseCondition(object):
 
     def local_run(self, input):
         """
-        Subclasses should implement this in order to run the condition's logic.
+        Подклассы должны реализовать этот метод для запуска логики условия.
         """
         raise NotImplementedError()
 
@@ -228,9 +229,9 @@ class LogicCondition(BaseCondition):
         return value
 
     def local_run(self, input):
-        # If we have a 'column_name', we should use that to extract the value
-        # from the input's columns.  Otherwise, we have a whitelist of what we
-        # can get from the input.
+        # Если есть 'column_name', используем его для извлечения значения
+        # из колонок входных данных. Иначе работаем с разрешенным списком
+        # полей, которые можно получить из входа.
         if self.column_name is not None:
             value = input.result_log['columns'].get(self.column_name)
         elif self.key == 'query_name':
@@ -244,16 +245,16 @@ class LogicCondition(BaseCondition):
         else:
             raise KeyError('Unknown key: {0}'.format(self.key))
 
-        # Try and convert the value to a number, if it looks like one
+        # Пытаемся преобразовать значение в число, если оно похоже на число.
         value = self.maybe_make_number(value)
 
-        # Pass to the actual logic function
+        # Передаем значение в реальную функцию логики.
         logger.debug("Running logic condition %r: %r | %r", self, self.expected, value)
         return self.compare(value)
 
     def compare(self, value):
         """
-        Subclasses should implement this to run the actual comparison.
+        Подклассы должны реализовать этот метод для выполнения сравнения.
         """
         raise NotImplementedError()
 
@@ -330,7 +331,7 @@ class GreaterEqualCondition(LogicCondition):
 
 class MatchesRegexCondition(LogicCondition):
     def __init__(self, key, expected, **kwargs):
-        # Pre-compile the 'expected' value - the regex.
+        # Предварительно компилируем ожидаемое значение, то есть регулярное выражение.
         expected = re.compile(expected)
         super(MatchesRegexCondition, self).__init__(key, expected, **kwargs)
 
@@ -340,7 +341,7 @@ class MatchesRegexCondition(LogicCondition):
 
 class NotMatchesRegexCondition(LogicCondition):
     def __init__(self, key, expected, **kwargs):
-        # Pre-compile the 'expected' value - the regex.
+        # Предварительно компилируем ожидаемое значение, то есть регулярное выражение.
         expected = re.compile(expected)
         super(NotMatchesRegexCondition, self).__init__(key, expected, **kwargs)
 
@@ -348,7 +349,7 @@ class NotMatchesRegexCondition(LogicCondition):
         return self.expected.match(value) is None
 
 
-# Needs to go at the end
+# Должно оставаться в конце файла.
 OPERATOR_MAP = {
     'equal': EqualCondition,
     'not_equal': NotEqualCondition,

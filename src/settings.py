@@ -6,7 +6,7 @@ import os
 
 class Config(object):
     SECRET_KEY = os.environ.get("SECRET_KEY", "vkr-inventory-default-secret-key-2026")
-    SERVER_NAME = None  # Disable strict matching to fix 404 behind proxy
+    SERVER_NAME = None  # Отключаем строгое совпадение, чтобы исправить 404 за прокси.
 
     SQLALCHEMY_DATABASE_URI = "postgresql://{user}:{pwd}@{host}:{port}/{dbname}".format(
         user=os.environ.get('POSTGRES_USER'),
@@ -33,7 +33,7 @@ class Config(object):
     DEBUG_TB_ENABLED = False
     DEBUG_TB_INTERCEPT_REDIRECTS = os.environ.get('DEBUG_TB_INTERCEPT_REDIRECTS', 'False').lower() in ('true', '1', 'yes')
 
-    APP_DIR = os.path.abspath(os.path.dirname(__file__))  # This directory
+    APP_DIR = os.path.abspath(os.path.dirname(__file__))  # Эта директория.
     PROJECT_ROOT = os.path.abspath(os.path.join(APP_DIR, os.pardir))
 
     SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS', 'False').lower() in ('true', '1', 'yes')
@@ -115,21 +115,21 @@ class Config(object):
         }),
 
         # 'pagerduty-security': ('inventory.plugins.alerters.pagerduty.PagerDutyAlerter', {
-        #     # Required
+        #     # Обязательно
         #     'service_key': 'foobar',
 
-        #     # Optional
+        #     # Необязательно
         #     'client_url': 'https://inventory.domain.com',
         #     'key_format': 'inventory-security-{count}',
         # }),
 
         # 'email': ('inventory.plugins.alerters.emailer.EmailAlerter', {
-        #     # Required
+        #     # Обязательно
         #     'recipients': [
         #         # 'security@example.com',
         #     ],
 
-        #     # Optional, see inventory/plugins/alerters/emailer.py for templates
+        #     # Необязательно, шаблоны см. в inventory/plugins/alerters/emailer.py
         #     'subject_prefix': '[Inventory]',
         #     'subject_template': '',
         #     'message_template': '',
@@ -141,10 +141,10 @@ class Config(object):
         # }),
 
         # 'slack': ('inventory.plugins.alerters.slack.SlackAlerter', {
-        #     # Required, create webhook here: https://my.slack.com/services/new/incoming-webhook/
+        #     # Обязательно, создайте webhook здесь: https://my.slack.com/services/new/incoming-webhook/
         #     'slack_webhook' : 'https://example.com/slack-webhook-placeholder',
 
-        #     # Optional
+        #     # Необязательно
         #     'printColumns': False,
         #     'color': '#36a64f',
         # })
@@ -266,7 +266,7 @@ class DevConfig(Config):
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     ASSETS_DEBUG = True
 
-    # SQLALCHEMY_DATABASE_URI inherits from Config
+    # SQLALCHEMY_DATABASE_URI наследуется из Config.
 
     ENROLL_SECRET = [
         'secret',

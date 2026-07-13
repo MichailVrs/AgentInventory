@@ -341,7 +341,7 @@ def add_pack():
     if form.validate_on_submit():
         pack = create_query_pack_from_upload(form.pack)
 
-        # Only redirect back to the pack list if everything was successful
+        # Возвращаемся к списку пакетов только если все прошло успешно.
         if pack is not None:
             return redirect(url_for('manage.packs', _anchor=pack.name))
 
@@ -576,7 +576,7 @@ def distributed_results(distributed_id, status=None, page=1):
                             record_name='{0} результатов оперативных запросов'.format(status or '').strip(),
                             bs_version=3)
 
-    # We could do this in the template, but it's more clear here.
+    # Можно было сделать это в шаблоне, но здесь понятнее.
     columns = []
     for task in tasks.items:
         if len(task.results) > 0 and len(task.results[0].columns) > 0:
@@ -601,7 +601,7 @@ def add_distributed():
         nodes = []
 
         if not form.nodes.data and not form.tags.data:
-            # all nodes get this query
+            # Этот запрос получают все узлы.
             nodes = Node.query.all()
 
         if form.nodes.data:
@@ -830,8 +830,7 @@ def create_tags(*tags):
     values = []
     existing = []
 
-    # create a set, because we haven't yet done our association_proxy in
-    # sqlalchemy
+    # Создаем set, потому что association_proxy в SQLAlchemy здесь еще не настроен.
 
     for value in (v.strip() for v in set(tags) if v.strip()):
         tag = Tag.query.filter(Tag.value == value).first()
@@ -957,7 +956,7 @@ def search(page=1, max_pp=500):
 
 
 # ---------------------------------------------------------------------------
-#  Dynamic CMDB Reports
+#  Динамические отчеты CMDB
 # ---------------------------------------------------------------------------
 
 @blueprint.route('/cmdb')

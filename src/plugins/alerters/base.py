@@ -6,9 +6,9 @@ from compat import with_metaclass
 
 class AbstractAlerterPlugin(with_metaclass(ABCMeta)):
     """
-    AbstractAlerterPlugin is the base class for all alerters in Inventory. It
-    defines the interface that an alerter should implement in order to support
-    sending an alert.
+    AbstractAlerterPlugin - базовый класс для всех оповещателей Inventory.
+    Он определяет интерфейс, который должен реализовать оповещатель
+    для поддержки отправки оповещений.
     """
     @abstractmethod
     def handle_alert(self, node, match):

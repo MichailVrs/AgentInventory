@@ -17,35 +17,35 @@ app = create_app(Config)
 with app.app_context():
     print("=== Clearing all data collected from agents ===")
     
-    # 1. Clear ResultLog
+    # 1. Очищаем ResultLog.
     print("Clearing ResultLog...")
     num_results = ResultLog.query.delete()
     
-    # 2. Clear StatusLog
+    # 2. Очищаем StatusLog.
     print("Clearing StatusLog...")
     num_status = StatusLog.query.delete()
     
-    # 3. Clear DistributedQueryResult
+    # 3. Очищаем DistributedQueryResult.
     print("Clearing DistributedQueryResult...")
     num_dist_res = DistributedQueryResult.query.delete()
     
-    # 4. Clear DistributedQueryTask
+    # 4. Очищаем DistributedQueryTask.
     print("Clearing DistributedQueryTask...")
     num_dist_task = DistributedQueryTask.query.delete()
 
-    # 5. Clear DistributedQuery
+    # 5. Очищаем DistributedQuery.
     print("Clearing DistributedQuery...")
     num_dist_q = DistributedQuery.query.delete()
     
-    # 6. Clear CmdbValue
+    # 6. Очищаем CmdbValue.
     print("Clearing CmdbValue...")
     num_values = CmdbValue.query.delete()
     
-    # 7. Clear CmdbObject
+    # 7. Очищаем CmdbObject.
     print("Clearing CmdbObject...")
     num_objects = CmdbObject.query.delete()
 
-    # 8. Clear cached node inventory fields learned from agent results
+    # 8. Очищаем кэшированные поля инвентаризации узла, полученные из результатов агента.
     print("Clearing Node.node_info...")
     num_node_info = Node.query.update({Node.node_info: {}}, synchronize_session=False)
     

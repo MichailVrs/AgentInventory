@@ -8,10 +8,10 @@ from settings import Config
 
 app = create_app(Config)
 with app.app_context():
-    # Cutoff for offline: checkin older than 1 hour or last_checkin is None
+    # Граница оффлайна: checkin старше 1 часа или last_checkin равен None.
     cutoff = dt.datetime.utcnow() - dt.timedelta(hours=1)
     
-    # We want to find nodes that have last_checkin before cutoff or last_checkin is None
+    # Ищем узлы, у которых last_checkin раньше границы или равен None.
     offline_nodes = Node.query.filter((Node.last_checkin == None) | (Node.last_checkin < cutoff)).all()
     
     if not offline_nodes:
@@ -23,26 +23,26 @@ with app.app_context():
     for node in offline_nodes:
         print(f"Purging offline node: {node.host_identifier} ({node.last_ip})")
         
-        # 1. Delete associated CMDB objects and values
+        # 1. Удаляем связанные объекты и значения CMDB.
         cmdb_objs = CmdbObject.query.filter_by(node_id=node.id).all()
         for co in cmdb_objs:
             db.session.delete(co)
             
-        # 2. Delete result logs
+        # 2. Удаляем логи результатов.
         ResultLog.query.filter_by(node_id=node.id).delete(synchronize_session=False)
         
-        # 3. Delete status logs
+        # 3. Удаляем логи состояния.
         StatusLog.query.filter_by(node_id=node.id).delete(synchronize_session=False)
         
-        # 4. Delete distributed query tasks (cascades automatically to results!)
+        # 4. Удаляем задачи оперативных запросов (результаты удаляются каскадно).
         tasks = DistributedQueryTask.query.filter_by(node_id=node.id).all()
         for task in tasks:
             db.session.delete(task)
             
-        # 5. Remove tag associations
+        # 5. Удаляем связи с тегами.
         node.tags = []
         
-        # 6. Delete the node itself
+        # 6. Удаляем сам узел.
         db.session.delete(node)
         
     db.session.commit()

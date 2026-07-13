@@ -18,7 +18,7 @@ class LoginForm(Form):
     remember = BooleanField('Remember me', validators=[Optional()])
 
     def __init__(self, *args, **kwargs):
-        """Create instance."""
+        """Создает экземпляр."""
         super(LoginForm, self).__init__(*args, **kwargs)
         self.user = None
 
@@ -34,7 +34,7 @@ class LoginForm(Form):
 
             if not self.user:
                 from extensions import bcrypt
-                # avoid timing leaks
+                # Избегаем утечек по времени выполнения.
                 bcrypt.generate_password_hash(self.password.data)
                 self.username.errors.append(error_message)
                 return False

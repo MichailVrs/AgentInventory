@@ -11,14 +11,14 @@ def create_inventory_app(*args, **kwargs):
 
 @click.group(cls=FlaskGroup, create_app=create_inventory_app)
 def cli():
-    """Management script for the Inventory application."""
+    """Скрипт управления приложением Inventory."""
     pass
 
 @cli.command("adduser")
 @click.argument("username")
 @click.option("--email", default=None)
 def adduser(username, email):
-    """Add a new user to the database."""
+    """Добавляет нового пользователя в базу данных."""
     from models import User
     import getpass
     import sys
@@ -41,7 +41,7 @@ def adduser(username, email):
 
 @cli.command("db_create")
 def db_create():
-    """Create all database tables."""
+    """Создает все таблицы базы данных."""
     db.create_all()
     print("Database tables created.")
 

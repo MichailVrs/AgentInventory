@@ -2,10 +2,10 @@
 import ast
 
 
-# This has to be a global due to `exec` shenanigans :-(
+# Это должно быть глобальной переменной из-за особенностей работы с `exec`.
 current_spec = {}
 
-# SQL types
+# Типы SQL.
 SQL_TYPES = [
     'TEXT',
     'DATE',
@@ -17,7 +17,7 @@ SQL_TYPES = [
     'BLOB',
 ]
 
-# Functions that we don't need
+# Функции, которые нам не нужны.
 DUMMY_FUNCTIONS = [
     'ForeignKey',
     'attributes',
@@ -50,12 +50,12 @@ def Column(name, col_type, *args, **kwargs):
 
 
 def schema(schema):
-    # Filter out 'None' entries (usually from ForeignKeys)
+    # Отфильтровываем элементы None, обычно появляющиеся из ForeignKey.
     real_schema = [x for x in schema if x is not None]
     current_spec['schema'] = real_schema
 
 def extended_schema(macro, schema):
-    # Filter out 'None' entries (usually from ForeignKeys)
+    # Отфильтровываем элементы None, обычно появляющиеся из ForeignKey.
     real_schema = [x for x in schema if x is not None]
     current_spec.setdefault('extended_schema', []).extend(real_schema)
 

@@ -61,11 +61,11 @@ class RuleManager(object):
         self.app = app
         self.load_alerters()
 
-        # Save this instance on the app, so we have a way to get at it.
+        # Сохраняем этот экземпляр в приложении, чтобы к нему можно было обратиться.
         app.rule_manager = self
 
     def load_alerters(self):
-        """ Load the alerter plugin(s) specified in the app config. """
+        """Загружает плагины оповещения, указанные в конфигурации приложения."""
         from importlib import import_module
         from plugins import AbstractAlerterPlugin
 
@@ -86,7 +86,7 @@ class RuleManager(object):
             self.alerters[name] = klass(config)
 
     def should_reload_rules(self):
-        """ Checks if we need to reload the set of rules. """
+        """Проверяет, нужно ли перезагрузить набор правил."""
         from models import Rule
 
         if self.last_update is None:
@@ -99,7 +99,7 @@ class RuleManager(object):
         return False
 
     def load_rules(self):
-        """ Load rules from the database. """
+        """Загружает правила из базы данных."""
         from rules import Network
         from models import Rule
 
@@ -115,22 +115,22 @@ class RuleManager(object):
             return
 
         for rule in all_rules:
-            # Verify the alerters
+            # Проверяем оповещатели.
             for alerter in rule.alerters:
                 if alerter not in self.alerters:
                     raise ValueError('No such alerter: "{0}"'.format(alerter))
 
-            # Create the rule.
+            # Создаем правило.
             self.network.parse_query(rule.conditions, alerters=rule.alerters, rule_id=rule.id)
 
-        # Save the last updated date
-        # Note: we do this here, and not in should_reload_rules, because it's
-        # possible that we've reloaded a rule in between the two functions, and
-        # thus we accidentally don't reload when we should.
+        # Сохраняем дату последнего обновления.
+        # Важно: делаем это здесь, а не в should_reload_rules, потому что
+        # правило могло быть перезагружено между двумя функциями, и тогда
+        # мы случайно не перезагрузим правила, когда это действительно нужно.
         self.last_update = max(r.updated_at for r in all_rules)
 
     def handle_log_entry(self, entry, node):
-        """ The actual entrypoint for handling input log entries. """
+        """Основная точка входа для обработки входящих записей логов."""
         from models import Rule
         from rules import RuleMatch
         from utils import extract_results
@@ -149,9 +149,9 @@ class RuleManager(object):
             if len(alerts) == 0:
                 continue
 
-            # Alerts is a set of (alerter name, rule id) tuples.  We convert
-            # these into RuleMatch instances, which is what our alerters are
-            # actually expecting.
+            # Alerts - это набор кортежей (имя оповещателя, id правила).
+            # Преобразуем их в экземпляры RuleMatch, именно их ожидают
+            # наши оповещатели.
             for alerter, rule_id in alerts:
                 rule = self.rules_map.get(rule_id)
                 if not rule:
@@ -163,14 +163,14 @@ class RuleManager(object):
                     node=node
                 )))
 
-        # Now that we've collected all results, start triggering them.
+        # Когда все результаты собраны, начинаем запускать оповещения.
         for alerter, match in to_trigger:
             self.alerters[alerter].handle_alert(node, match)
 
 
 def make_celery(app, celery):
-    """ From http://flask.pocoo.org/docs/0.10/patterns/celery/ """
-    # Register our custom serializer type before updating the configuration.
+    """По материалам http://flask.pocoo.org/docs/0.10/patterns/celery/."""
+    # Регистрируем собственный тип сериализатора перед обновлением конфигурации.
     from kombu.serialization import register
     from celery_serializer import djson_dumps, djson_loads
 
@@ -180,15 +180,15 @@ def make_celery(app, celery):
         content_encoding='utf-8'
     )
 
-    # Actually update the config
+    # Обновляем конфигурацию.
     celery.config_from_object(app.config)
 
-    # Register Sentry client
+    # Регистрируем клиент Sentry.
     if 'SENTRY_DSN' in app.config and app.config['SENTRY_DSN']:
         client = Client(app.config['SENTRY_DSN'])
-        # register a custom filter to filter out duplicate logs
+        # Регистрируем пользовательский фильтр для отсеивания дублирующихся логов.
         register_logger_signal(client)
-        # hook into the Celery error handler
+        # Подключаемся к обработчику ошибок Celery.
         register_signal(client)
 
     TaskBase = celery.Task

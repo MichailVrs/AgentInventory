@@ -7,7 +7,7 @@ from models import CmdbObject
 from application import create_app
 from settings import Config
 
-# Configure logging for standard output
+# Настраиваем логирование в стандартный вывод.
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -25,7 +25,7 @@ def clean_cmdb_data(dry_run=False, batch_size=1000):
 
     while True:
         try:
-            # Batch query ordered by ID to prevent loading all rows into memory at once
+            # Пакетный запрос с сортировкой по ID, чтобы не загружать все строки в память сразу.
             objs = CmdbObject.query.filter(CmdbObject.id > last_id).order_by(CmdbObject.id).limit(batch_size).all()
             if not objs:
                 break
@@ -37,8 +37,8 @@ def clean_cmdb_data(dry_run=False, batch_size=1000):
                     continue
 
                 new_type = original_type
-                # The startswith condition should be evaluated first,
-                # as otherwise the broader 'in' check makes the startswith branch unreachable
+                # Условие startswith должно проверяться первым, иначе более широкая
+                # проверка через 'in' сделает ветку startswith недостижимой.
                 if original_type.startswith('cmdb_'):
                     new_type = original_type[5:]
                 elif 'cmdb_' in original_type:

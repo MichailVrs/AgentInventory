@@ -8,7 +8,7 @@ from database import db
 from models import Node, Tag, StatusLog
 from settings import TestConfig
 
-# Determine database URI from env or fallback to local test database config
+# Определяем URI базы данных из окружения или используем локальную тестовую конфигурацию.
 db_host = os.environ.get('POSTGRES_HOST', 'db')
 db_port = os.environ.get('POSTGRES_PORT', '5432')
 db_user = os.environ.get('POSTGRES_USER', 'inventory')
@@ -21,7 +21,7 @@ if env_uri:
 else:
     db_uri = f'postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}'
 
-# Safety check: database name must contain 'test' to prevent dropping a shared DB
+# Проверка безопасности: имя базы должно содержать 'test', чтобы не удалить общую БД.
 if 'test' not in db_uri.split('/')[-1].lower():
     raise ValueError(
         f"Safety check failed: SQLALCHEMY_DATABASE_URI '{db_uri}' "
@@ -33,7 +33,7 @@ class TestAPIConfig(TestConfig):
     WTF_CSRF_ENABLED = False
     ENROLL_SECRET = 'secret'
     
-    # Celery eager configurations
+    # Конфигурация eager-режима Celery.
     CELERY_ALWAYS_EAGER = True
     CELERY_TASK_ALWAYS_EAGER = True
     task_always_eager = True
@@ -45,7 +45,7 @@ class APISmokeTestCase(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         
-        # Initialize isolated test database tables
+        # Инициализируем изолированные таблицы тестовой базы данных.
         db.create_all()
 
     def tearDown(self):
@@ -54,7 +54,7 @@ class APISmokeTestCase(unittest.TestCase):
         self.app_context.pop()
 
     def test_enroll_success(self):
-        # Test enrolling with correct secret
+        # Проверяем регистрацию с корректным секретом.
         payload = {
             'enroll_secret': 'secret',
             'host_identifier': 'test-node-uuid-1'
@@ -67,7 +67,7 @@ class APISmokeTestCase(unittest.TestCase):
         self.assertIn('node_key', data)
         self.assertFalse(data['node_invalid'])
         
-        # Verify node created in database
+        # Проверяем, что узел создан в базе данных.
         node = Node.query.filter_by(host_identifier='test-node-uuid-1').first()
         self.assertIsNotNone(node)
         self.assertEqual(node.node_key, data['node_key'])
@@ -85,7 +85,7 @@ class APISmokeTestCase(unittest.TestCase):
         self.assertTrue(data['node_invalid'])
 
     def test_enroll_empty_json(self):
-        # Test that empty or invalid JSON returns empty string with 200 status
+        # Проверяем, что пустой или некорректный JSON возвращает пустую строку со статусом 200.
         response = self.client.post('/enroll', 
                                     data='',
                                     content_type='application/json')
@@ -93,7 +93,7 @@ class APISmokeTestCase(unittest.TestCase):
         self.assertEqual(response.data.decode('utf-8'), '')
 
     def test_log_status_and_result(self):
-        # First enroll a node to get node_key
+        # Сначала регистрируем узел, чтобы получить node_key.
         payload = {
             'enroll_secret': 'secret',
             'host_identifier': 'test-node-uuid-3'
@@ -103,7 +103,7 @@ class APISmokeTestCase(unittest.TestCase):
                                     content_type='application/json')
         node_key = json.loads(response.data.decode('utf-8'))['node_key']
 
-        # Test status log submission
+        # Проверяем отправку лога состояния.
         status_payload = {
             'node_key': node_key,
             'log_type': 'status',
@@ -124,7 +124,7 @@ class APISmokeTestCase(unittest.TestCase):
                                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
-        # Test result log submission (triggers normalization / EAV)
+        # Проверяем отправку лога результата, запускающую нормализацию/EAV.
         with patch('tasks.normalize_to_cmdb.delay') as mock_normalize, \
              patch('tasks.analyze_result.delay'), \
              patch('tasks.learn_from_result.delay'):
@@ -154,29 +154,28 @@ class APISmokeTestCase(unittest.TestCase):
     def test_delete_distributed_task(self):
         from models import DistributedQuery, DistributedQueryTask
         
-        # Bypass login required in testing
+        # Обходим обязательный вход в тестовом режиме.
         self.app.config['LOGIN_DISABLED'] = True
         
-        # Create a test node
+        # Создаем тестовый узел.
         node = Node.create(host_identifier='test-delete-task-node')
         
-        # Create a test distributed query
+        # Создаем тестовый оперативный запрос.
         dq = DistributedQuery.create(sql='select 1;', description='test')
         
-        # Create a distributed query task
+        # Создаем задачу оперативного запроса.
         task = DistributedQueryTask.create(node=node, distributed_query=dq)
         task_id = task.id
         
-        # Verify it exists in database
+        # Проверяем, что она существует в базе данных.
         self.assertIsNotNone(DistributedQueryTask.query.get(task_id))
         
-        # Make the delete request
+        # Выполняем запрос на удаление.
         response = self.client.delete(f'/manage/distributed_task/{task_id}')
         self.assertEqual(response.status_code, 204)
         
-        # Verify it is successfully deleted from database
+        # Проверяем, что она успешно удалена из базы данных.
         self.assertIsNone(DistributedQueryTask.query.get(task_id))
 
 if __name__ == '__main__':
     unittest.main()
-

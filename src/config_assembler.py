@@ -77,11 +77,10 @@ def assemble_packs(node):
 
 def assemble_distributed_queries(node):
     '''
-    Retrieve all distributed queries assigned to a particular node
-    in the NEW state. This function will change the state of the
-    distributed query to PENDING, however will not commit the change.
-    It is the responsibility of the caller to commit or rollback on the
-    current database session.
+    Возвращает все оперативные запросы, назначенные конкретному узлу
+    и находящиеся в состоянии NEW. Функция изменяет состояние оперативного
+    запроса на PENDING, но не фиксирует изменение. Commit или rollback
+    текущей сессии базы данных выполняет вызывающий код.
     '''
     now = dt.datetime.utcnow()
     query = db.session.query(DistributedQueryTask) \
@@ -103,8 +102,8 @@ def assemble_distributed_queries(node):
                     started_at=now,
                     commit=False)
 
-        # add this query to the session, but don't commit until we're
-        # as sure as we possibly can be that it's been received by the
-        # osqueryd client. unfortunately, there are no guarantees though.
+        # Добавляем этот запрос в сессию, но не выполняем commit, пока
+        # не будем максимально уверены, что клиент osqueryd его получил.
+        # К сожалению, строгих гарантий здесь нет.
         db.session.add(task)
     return queries

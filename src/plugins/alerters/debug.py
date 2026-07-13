@@ -20,5 +20,5 @@ class DebugAlerter(AbstractAlerterPlugin):
         self.level = self.LEVEL_MAPPINGS.get(levelname, logging.DEBUG)
 
     def handle_alert(self, node, match):
-        # TODO(andrew-d): better message?
+        # TODO(andrew-d): улучшить сообщение?
         current_app.logger.log(self.level, 'Triggered alert: {0!r}'.format(match))

@@ -13,14 +13,14 @@ DEFAULT_KEY_FORMAT = 'inventory-incident-{count}'
 
 class PagerDutyAlerter(AbstractAlerterPlugin):
     def __init__(self, config):
-        # Required configuration
+        # Обязательная конфигурация.
         self.service_key = config['service_key']
 
-        # Optional
+        # Необязательные параметры.
         self.client_url = config.get('client_url', '')
         self.key_format = config.get('key_format', DEFAULT_KEY_FORMAT)
 
-        # Other
+        # Прочее.
         self.incident_count = 0
         self.logger = logging.getLogger(__name__ + '.PagerDutyAlerter')
 

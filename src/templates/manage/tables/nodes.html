@@ -7,6 +7,7 @@
                             <th>IP-адрес агента</th>
                             <th>Регистрация</th>
                             <th>Активность</th>
+                            <th>Данные получены</th>
                             <th>Метки</th>
                         </tr>
                     </thead>
@@ -35,6 +36,13 @@
                             </td>
                             <td class="text-muted small" title="{{ node.enrolled_on }}">{{ node.enrolled_on | relative_time }}</td>
                             <td class="text-muted small" title="{{ node.last_checkin }}">{{ node.last_checkin | relative_time }}</td>
+                            <td class="small">
+                                {% if node.last_result_log_timestamp %}
+                                    <span class="text-success" title="{{ node.last_result_log_timestamp }}"><i class="fa fa-clock-o"></i> {{ node.last_result_log_timestamp | relative_time }}</span>
+                                {% else %}
+                                    <span class="label label-danger" style="font-size: 10px; display: inline-block; padding: .2em .6em .3em;"><i class="fa fa-exclamation-triangle"></i> Данные не поступали</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 <input class="tagsinput" value="{{ node.tags | map(attribute='value') | sort | join(',') }}" data-uri="{{ url_for('manage.tag_node', node_id=node.id) }}">
                             </td>

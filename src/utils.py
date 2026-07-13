@@ -30,13 +30,13 @@ schema_path = os.path.join(base_dir, 'resources', 'osquery_schema.sql')
 
 with open(schema_path, 'r', encoding='utf-8') as f:
     schema = f.read()
-# Read DDL statements from our package
+# Читаем DDL-выражения из пакета.
 # schema = pkg_resources.resource_string('src', join('resources', 'osquery_schema.sql'))
 # schema = schema.decode('utf-8')
 schema = [x for x in schema.strip().split('\n') if not x.startswith('--')]
 
-# SQLite in Python will complain if you try to use it from multiple threads.
-# We create a threadlocal variable that contains the DB, lazily initialized.
+# SQLite в Python будет ругаться при попытке использовать его из нескольких потоков.
+# Создаем thread-local переменную с базой данных, которая лениво инициализируется.
 osquery_mock_db = threading.local()
 
 
@@ -88,17 +88,16 @@ def result_identity(name, columns):
 
 def create_query_pack_from_upload(upload):
     '''
-    Create a pack and queries from a query pack file. **Note**, if a
-    pack already exists under the filename being uploaded, then any
-    queries defined here will be added to the existing pack! However,
-    if a query with a particular name already exists, and its sql is
-    NOT the same, then a new query with the same name but different id
-    will be created (as to avoid clobbering the existing query). If its
-    sql is identical, then the query will be reused.
+    Создает пакет и запросы из файла пакета запросов. **Важно**: если пакет
+    уже существует под именем загружаемого файла, все описанные здесь запросы
+    будут добавлены в существующий пакет. Однако если запрос с таким именем
+    уже существует, но его SQL отличается, будет создан новый запрос с тем же
+    именем и другим id, чтобы не перезаписать существующий запрос. Если SQL
+    идентичен, будет повторно использован существующий запрос.
 
     '''
-    # The json package on Python 3 expects a `str` input, so we're going to
-    # read the body and possibly convert to the right type
+    # Модуль json в Python 3 ожидает вход типа `str`, поэтому читаем тело
+    # и при необходимости приводим его к правильному типу.
     body = upload.data.read()
     if not isinstance(body, six.string_types):
         body = body.decode('utf-8')
@@ -166,9 +165,8 @@ def get_node_health(node):
         return ''
 
 
-# Not super-happy that we're duplicating this both here and in the JS, but I
-# couldn't think of a nice way to pass from JS --> Python (or the other
-# direction).
+# Не лучшее решение дублировать это и здесь, и в JS, но удобного способа
+# передать данные из JS в Python или обратно здесь нет.
 PRETTY_OPERATORS = {
     'equal': 'equals',
     'not_equal': "doesn't equal",
@@ -203,7 +201,7 @@ def pretty_field(field):
     return PRETTY_FIELDS.get(field, field)
 
 
-# Since 'string.printable' includes control characters
+# Так как 'string.printable' включает управляющие символы.
 PRINTABLE = string.ascii_letters + string.digits + string.punctuation + ' '
 
 
@@ -222,7 +220,7 @@ def quote(s, quote='"'):
         elif ch in PRINTABLE:
             buf.append(ch)
         else:
-            # Hex escape
+            # Hex-экранирование.
             buf.append('\\x')
             buf.append(hex(ord(ch))[2:])
 
@@ -243,7 +241,7 @@ def create_mock_db():
 
 
 def validate_osquery_query(query):
-    # Check if this thread has an instance of the SQLite database
+    # Проверяем, есть ли у этого потока экземпляр базы данных SQLite.
     db = getattr(osquery_mock_db, 'db', None)
     if db is None:
         db = create_mock_db()
@@ -275,10 +273,10 @@ def learn_from_result(result, node):
     orig_node_info = node_info.copy()
 
     for _, action, columns, _, in extract_results(result):
-        # only update columns common to both sets
+        # Обновляем только колонки, общие для обоих наборов.
         for column in capture_columns & set(columns):
 
-            cvalue = node_info.get(column)  # current value
+            cvalue = node_info.get(column)  # текущее значение
             value = columns.get(column)
 
             if action == 'removed' and (cvalue is None or cvalue != value):
@@ -288,7 +286,7 @@ def learn_from_result(result, node):
             elif action == 'added' and (cvalue is None or cvalue != value):
                 node_info[column] = value
 
-    # only update node_info if there's actually a change
+    # Обновляем node_info только при фактическом изменении.
 
     if orig_node_info == node_info:
         return
@@ -336,9 +334,9 @@ def process_result(result, node):
 
 def extract_results(result):
     """
-    extract_results will convert the incoming log data into a series of Fields,
-    normalizing and/or aggregating both batch and event format into batch
-    format, which is used throughout the rest of inventory.
+    Преобразует входящие данные логов в последовательность Field, нормализуя
+    и/или агрегируя пакетный и событийный форматы в пакетный формат,
+    используемый во всей остальной части inventory.
     """
     if not result['data']:
         return
@@ -360,8 +358,8 @@ def extract_results(result):
             added = entry['diffResults']['added']
             removed = entry['diffResults']['removed']
             for (action, items) in (('added', added), ('removed', removed)):
-                # items could be "", so we're still safe to iter over
-                # and ensure we don't return an empty value for columns
+                # items может быть "", поэтому итерация все еще безопасна;
+                # дополнительно гарантируем, что не вернем пустое значение columns.
                 for columns in items:
                     yield Field(name=name,
                                 action=action,
@@ -443,8 +441,8 @@ def render_column(value, column):
             template = Template(template, autoescape=True)
             rendered = template.render(value=value)
 
-            # return a markup object so that the template where this is
-            # rendered is not escaped again
+            # Возвращаем объект markup, чтобы шаблон, где он рендерится,
+            # не экранировал его повторно.
 
             return Markup(rendered)
     except Exception:
@@ -461,7 +459,7 @@ def relative_time(value):
     if not value:
         return u'Никогда'
     
-    # If it is a string representation of date
+    # Если значение является строковым представлением даты.
     if isinstance(value, six.string_types):
         try:
             if '.' in value:

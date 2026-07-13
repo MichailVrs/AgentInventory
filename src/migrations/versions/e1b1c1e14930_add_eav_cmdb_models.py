@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Add EAV CMDB models
+"""Добавляет EAV-модели CMDB.
 
 Revision ID: e1b1c1e14930
 Revises: a76be8b92780
@@ -7,7 +7,7 @@ Create Date: 2026-04-23 12:44:00.000000
 
 """
 
-# revision identifiers, used by Alembic.
+# Идентификаторы ревизии, используемые Alembic.
 revision = 'e1b1c1e14930'
 down_revision = 'a76be8b92780'
 

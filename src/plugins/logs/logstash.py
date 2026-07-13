@@ -46,7 +46,7 @@ class LogstashPlugin(AbstractLogsPlugin):
                     'message': item.get('message', ''),
                     'severity': item.get('severity', ''),
                     'filename': item.get('filename', ''),
-                    'osquery_version': item.get('version'),  # be null
+                    'osquery_version': item.get('version'),  # может быть null
                     'created': created,
                 }, fp)
                 fp.write('\r\n')

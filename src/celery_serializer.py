@@ -24,12 +24,12 @@ def djson_decoder(obj):
     return obj
 
 
-# Encoder function
+# Функция кодирования.
 def djson_dumps(obj):
     return json.dumps(obj, cls=DJSONEncoder)
 
 
-# Decoder function
+# Функция декодирования.
 def djson_loads(s):
     if not isinstance(s, string_types):
         s = s.decode('utf-8')

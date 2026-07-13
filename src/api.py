@@ -24,23 +24,29 @@ blueprint = Blueprint('api', __name__)
 def node_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # in v1.7.4, the Content-Encoding header is set when
+        # В версии 1.7.4 заголовок Content-Encoding устанавливается, когда
         # --logger_tls_compress=true
         if 'Content-Encoding' in request.headers and \
             request.headers['Content-Encoding'] == 'gzip':
             request._cached_data = gzip.GzipFile(
                 fileobj=BytesIO(request.get_data())).read()
 
-        request_json = request.get_json()
+        try:
+            request_json = request.get_json()
+        except Exception as e:
+            current_app.logger.error("Failed to parse JSON: %s", str(e))
+            current_app.logger.error("Raw data: %r", request.get_data())
+            return "Invalid JSON", 400
 
         if not request_json or 'node_key' not in request_json:
+
             current_app.logger.error(
                 "%s - Request did not contain valid JSON data. This could "
                 "be an attempt to gather information about this endpoint "
                 "or an automated scanner.",
                 request.remote_addr
             )
-            # Return nothing
+            # Ничего не возвращаем.
             return ""
 
         node_key = request_json.get('node_key')
@@ -85,10 +91,10 @@ def index():
 @blueprint.route('/v1/enroll', methods=['POST', 'PUT'])
 def enroll():
     '''
-    Enroll an endpoint with osquery.
+    Регистрирует конечную точку с osquery.
 
-    :returns: a `node_key` unique id. Additionally `node_invalid` will
-        be true if the node failed to enroll.
+    :returns: уникальный идентификатор `node_key`. Дополнительно `node_invalid`
+        будет true, если узел не смог зарегистрироваться.
     '''
     from services.enrollment import enroll_node
     res, status_code = enroll_node(request.get_json(silent=True), request.remote_addr)
@@ -103,9 +109,9 @@ def enroll():
 @node_required
 def configuration(node=None):
     '''
-    Retrieve an osquery configuration for a given node.
+    Возвращает конфигурацию osquery для заданного узла.
 
-    :returns: an osquery configuration file
+    :returns: файл конфигурации osquery
     '''
     current_app.logger.info(
         "%s - %s checking in to retrieve a new configuration",
@@ -113,7 +119,7 @@ def configuration(node=None):
     )
     config = node.get_config()
 
-    # last_checkin, last_ip and session commit are handled by the decorator
+    # last_checkin, last_ip и commit сессии обрабатываются декоратором.
     return jsonify(node_invalid=False, **config)
 
 
@@ -157,7 +163,7 @@ def logger(node=None):
             request.remote_addr, log_type
         )
         current_app.logger.info(json.dumps(data))
-        # last_checkin, last_ip and session commit are handled by the decorator
+        # last_checkin, last_ip и commit сессии обрабатываются декоратором.
         pass
 
     return jsonify(node_invalid=False)
@@ -178,7 +184,7 @@ def distributed_read(node=None):
 
     queries = node.get_new_queries()
 
-    # last_checkin, last_ip, and query state updates are committed by the decorator
+    # last_checkin, last_ip и обновления состояния запросов фиксируются декоратором.
     pass
 
     return jsonify(queries=queries, node_invalid=False)
@@ -214,7 +220,7 @@ def distributed_write(node=None):
             )
             continue
 
-        # non-zero status indicates sqlite errors
+        # Ненулевой статус указывает на ошибки SQLite.
         now = dt.datetime.utcnow()
         error_message = None
         if not statuses.get(guid, 0):
@@ -241,7 +247,7 @@ def distributed_write(node=None):
             db.session.add(task)
 
     else:
-        # last_checkin, last_ip and session commit are handled by the decorator
+        # last_checkin, last_ip и commit сессии обрабатываются декоратором.
         pass
 
     return jsonify(node_invalid=False)

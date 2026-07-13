@@ -90,13 +90,13 @@ def get_or_create_attribute(key, attributes_cache):
     if attr:
         return attr
 
-    # Double check database to see if another parallel task created it
+    # Повторно проверяем базу данных: атрибут могла создать другая параллельная задача.
     attr = CmdbAttributeDict.query.filter_by(name=key).first()
     if attr:
         attributes_cache[key] = attr
         return attr
 
-    # Create using a nested transaction (savepoint) to recover from IntegrityError
+    # Создаем через вложенную транзакцию (savepoint), чтобы восстановиться после IntegrityError.
     db.session.begin_nested()
     try:
         attr = CmdbAttributeDict(name=key, data_type='string')

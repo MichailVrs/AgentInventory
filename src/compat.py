@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Python 2/3 compatibility module."""
+"""Модуль совместимости Python 2/3."""
 import sys
 
 PY2 = int(sys.version[0]) == 2
@@ -19,7 +19,7 @@ else:
 
 
 def with_metaclass(meta, *bases):
-    """Create a base class with a metaclass."""
+    """Создает базовый класс с метаклассом."""
     class metaclass(meta):
         def __new__(cls, name, this_bases, d):
             return meta(name, bases, d)

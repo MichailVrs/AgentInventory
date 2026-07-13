@@ -161,6 +161,7 @@ class Query(SurrogatePK, Model):
             'value': self.value,
             'removed': self.removed,
             'shard': self.shard,
+            'snapshot': True,
         }
 
 
@@ -302,6 +303,15 @@ class Node(SurrogatePK, Model):
         ips = self.agent_ips
         return ips[0] if ips else ''
 
+    @property
+    def last_result_log_timestamp(self):
+        session = db.session.object_session(self) or db.session
+        latest_log = session.query(ResultLog) \
+            .filter(ResultLog.node_id == self.id) \
+            .order_by(ResultLog.timestamp.desc()) \
+            .first()
+        return latest_log.timestamp if latest_log else None
+
     @staticmethod
     def _agent_ip_columns(result_rows, distributed_rows):
         for row in result_rows:
@@ -382,7 +392,7 @@ class Node(SurrogatePK, Model):
             .options(db.lazyload('*'))
 
     def to_dict(self):
-        # NOTE: deliberately not including any secret values in here, for now.
+        # Примечание: намеренно не включаем сюда секретные значения.
         return {
             'id': self.id,
             'display_name': self.display_name,
@@ -615,7 +625,7 @@ class User(UserMixin, SurrogatePK, Model):
     password = Column(db.String, nullable=True)
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
 
-    # oauth related stuff
+    # Данные, связанные с OAuth.
     social_id = Column(db.String)
     first_name = Column(db.String)
     last_name = Column(db.String)

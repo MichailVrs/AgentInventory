@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Rebuild scheduled osquery packs for a diploma demo stand.
+Пересобирает плановые пакеты osquery для дипломного демонстрационного стенда.
 
-The script keeps agents/nodes intact, removes old scheduled query packs, clears
-old collected inventory rows, and creates one compact Windows inventory pack.
+Скрипт сохраняет агентов и узлы, удаляет старые плановые пакеты запросов,
+очищает ранее собранные строки инвентаризации и создает один компактный
+пакет инвентаризации Windows.
 """
 from application import create_app
 from database import db
@@ -29,7 +30,7 @@ from utils import validate_osquery_query
 import json
 import os
 
-# Get directory of this script
+# Получаем директорию этого скрипта.
 script_dir = os.path.dirname(os.path.abspath(__file__))
 json_path = os.path.join(script_dir, 'diploma_base_inventory.json')
 

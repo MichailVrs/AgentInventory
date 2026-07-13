@@ -91,15 +91,15 @@ document.addEventListener("DOMContentLoaded", function () {
         var select = document.getElementById(selectId);
         if (!select) return;
 
-        // Hide original select
+        // Скрываем исходный select.
         select.style.display = 'none';
 
-        // Create container wrapper
+        // Создаем контейнер-обертку.
         var wrapper = document.createElement('div');
         wrapper.className = 'custom-multiselect-dropdown dropdown';
         wrapper.style.position = 'relative';
 
-        // Create toggle button
+        // Создаем кнопку переключения.
         var button = document.createElement('button');
         button.className = 'btn btn-default dropdown-toggle form-control';
         button.type = 'button';
@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
         button.appendChild(selectedSpan);
         button.appendChild(caretSpan);
 
-        // Create dropdown menu
+        // Создаем выпадающее меню.
         var menu = document.createElement('div');
         menu.className = 'dropdown-menu multiselect-menu';
         menu.style.width = '100%';
@@ -143,12 +143,12 @@ document.addEventListener("DOMContentLoaded", function () {
         menu.style.border = '1px solid #e2e8f0';
         menu.style.backgroundColor = '#ffffff';
 
-        // Prevent dropdown from closing when clicking inside
+        // Предотвращаем закрытие меню при клике внутри.
         menu.addEventListener('click', function (e) {
             e.stopPropagation();
         });
 
-        // Search container
+        // Контейнер поиска.
         var searchDiv = document.createElement('div');
         searchDiv.style.paddingBottom = '8px';
         searchDiv.style.borderBottom = '1px solid #e2e8f0';
@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
         searchDiv.appendChild(searchInput);
         menu.appendChild(searchDiv);
 
-        // Options container
+        // Контейнер опций.
         var optionsContainer = document.createElement('div');
         optionsContainer.className = 'options-container';
         optionsContainer.style.overflowY = 'auto';
@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         menu.appendChild(optionsContainer);
 
-        // Build list from original options
+        // Строим список из исходных опций.
         var checkboxes = [];
         Array.from(select.options).forEach(function (option) {
             var itemDiv = document.createElement('div');

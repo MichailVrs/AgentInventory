@@ -76,7 +76,7 @@ def logout():
 
     logout_user()
 
-    # clear any oauth state
+    # Очищаем любое состояние OAuth.
     for key in ('_oauth_state', '_oauth_token'):
         oauth |= not not session.pop(key, None)
 
@@ -86,7 +86,7 @@ def logout():
         flash(u"Вы успешно вышли из системы.", "info")
         current_app.logger.info("%s logged out", username)
 
-    # explicitly log the user out, and clear their remember me cookie
+    # Явно завершаем сессию пользователя и очищаем cookie "remember me".
 
     cookie_name = current_app.config.get('REMEMBER_COOKIE_NAME', COOKIE_NAME)
     cookie_path = current_app.config.get('REMEMBER_COOKIE_PATH', '/')

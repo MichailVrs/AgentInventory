@@ -9,14 +9,14 @@ DEFAULT_COLOR = '#36a64f'
 
 class SlackAlerter(AbstractAlerterPlugin):
     def __init__(self, config):
-        # Required configuration
+        # Обязательная конфигурация.
         self.slack_webhook = config['slack_webhook']
 
-        # Optional
+        # Необязательные параметры.
         self.printColumns = config.get('printColumns', False)
         self.color = config.get('color', DEFAULT_COLOR)
 
-        # Other
+        # Прочее.
         self.logger = logging.getLogger(__name__ + '.SlackAlerter')
 
     def handle_alert(self, node, match):

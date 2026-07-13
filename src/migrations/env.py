@@ -5,39 +5,38 @@ from logging.config import fileConfig
 import logging
 from flask import current_app
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
+# Это объект конфигурации Alembic, который предоставляет
+# доступ к значениям из используемого .ini-файла.
 config = context.config
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
+# Интерпретируем файл конфигурации для логирования Python.
+# Эта строка настраивает логгеры.
 fileConfig(config.config_file_name)
 logger = logging.getLogger('alembic.env')
 
-# add your model's MetaData object here
-# for 'autogenerate' support
+# Добавьте сюда объект MetaData вашей модели
+# для поддержки 'autogenerate'.
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 config.set_main_option('sqlalchemy.url',
                        current_app.config.get('SQLALCHEMY_DATABASE_URI'))
 target_metadata = current_app.extensions['migrate'].db.metadata
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
+# Другие значения из конфигурации, нужные env.py,
+# можно получить так:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
 
 def run_migrations_offline():
-    """Run migrations in 'offline' mode.
+    """Запускает миграции в режиме 'offline'.
 
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
+    Настраивает контекст только с URL, а не с Engine, хотя Engine
+    здесь тоже допустим. Поскольку Engine не создается, наличие DBAPI
+    не требуется.
 
-    Calls to context.execute() here emit the given string to the
-    script output.
+    Вызовы context.execute() здесь выводят переданную строку
+    в вывод скрипта.
 
     """
     url = config.get_main_option("sqlalchemy.url")
@@ -48,16 +47,15 @@ def run_migrations_offline():
 
 
 def run_migrations_online():
-    """Run migrations in 'online' mode.
+    """Запускает миграции в режиме 'online'.
 
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
+    В этом сценарии нужно создать Engine и связать соединение с контекстом.
 
     """
 
-    # this callback is used to prevent an auto-migration from being generated
-    # when there are no changes to the schema
-    # reference: http://alembic.readthedocs.org/en/latest/cookbook.html
+    # Этот callback предотвращает генерацию автомиграции,
+    # если в схеме нет изменений.
+    # Справка: http://alembic.readthedocs.org/en/latest/cookbook.html
     def process_revision_directives(context, revision, directives):
         if getattr(config.cmd_opts, 'autogenerate', False):
             script = directives[0]

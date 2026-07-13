@@ -1,4 +1,4 @@
-// place any jQuery/helper plugins in here, instead of separate, slower script files.
+// Размещайте здесь плагины jQuery и вспомогательные плагины вместо отдельных, более медленных файлов скриптов.
 
 (function($) {
     if (!$ || $.fn.DataTable) {
@@ -769,7 +769,7 @@ $(function() {
                 type: 'column_' + operator,
                 nb_inputs: QueryBuilder.OPERATORS[operator].nb_inputs + 1,
                 multiple: true,
-                apply_to: ['string'],        // Currently, all column operators are strings
+                apply_to: ['string'],        // Сейчас все операторы колонок являются строковыми.
             };
         });
 
@@ -777,13 +777,13 @@ $(function() {
             return 'column_' + operator;
         });
 
-        // Copy existing names
+        // Копируем существующие имена.
         var CUSTOM_LANG = {};
         SUPPORTED_OPERATOR_NAMES.forEach(function (op) {
             CUSTOM_LANG['column_' + op] = QueryBuilder.regional.en.operators[op];
         });
 
-        // Custom operators
+        // Пользовательские операторы.
         Array.prototype.push.apply(SUPPORTED_OPERATOR_NAMES, ['matches_regex', 'not_matches_regex']);
         Array.prototype.push.apply(SUPPORTED_OPERATORS, [
             {
@@ -820,7 +820,7 @@ $(function() {
         CUSTOM_LANG['column_matches_regex'] = 'matches regex';
         CUSTOM_LANG['column_not_matches_regex'] = "doesn't match regex";
 
-        // Get existing rules, if any.
+        // Получаем существующие правила, если они есть.
         var existingRules;
         try {
             var v = $('#rules-hidden').val();
@@ -828,7 +828,7 @@ $(function() {
                 existingRules = JSON.parse(v);
             }
         } catch (e) {
-            // Do nothing.
+            // Ничего не делаем.
         }
 
         $queryBuilder.queryBuilder({
@@ -882,13 +882,13 @@ $(function() {
                 },
             },
 
-            // Existing rules (if any)
+            // Существующие правила, если они есть.
             rules: existingRules,
         });
 
-        // Set the placeholder of the first value for all 'column_*' rules to
-        // 'column name'.  A bit hacky, but this seems to be the only way to
-        // accomplish this.
+        // Задаем placeholder первого значения для всех правил 'column_*'
+        // как 'имя колонки'. Немного хакерский способ, но похоже,
+        // что это единственный вариант.
         $queryBuilder.on('getRuleInput.queryBuilder.filter', function (evt, rule, name) {
             if (rule.operator.type.match(/^column_/) && name.match(/value_0$/)) {
                 var el = $(evt.value);
