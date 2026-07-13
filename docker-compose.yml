@@ -20,7 +20,7 @@ services:
       TZ: Europe/Moscow
       PYTHONDONTWRITEBYTECODE: 1
       PYTHONPATH: /src
-      SECRET_KEY: ${SECRET_KEY:-super-secret-production-key-change-me}
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
       POSTGRES_DATABASE: ${POSTGRESQL_DATABASE}
@@ -30,7 +30,7 @@ services:
       DEBUG_TB_ENABLED: False
       ASSETS_DEBUG: False
       REDIS_HOST: broker
-      ENROLL_SECRET: ${ENROLL_SECRET}
+      ENROLL_SECRET: ${ENROLL_SECRET:?ENROLL_SECRET is required}
       FLASK_DEBUG: 0
       FLASK_APP: manage.py
     depends_on:
@@ -47,7 +47,7 @@ services:
     environment:
       PYTHONDONTWRITEBYTECODE: 1
       PYTHONPATH: /src
-      SECRET_KEY: ${SECRET_KEY:-super-secret-production-key-change-me}
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
       POSTGRES_DATABASE: ${POSTGRESQL_DATABASE}
@@ -56,6 +56,7 @@ services:
       DEBUG: False
       ASSETS_DEBUG: False
       REDIS_HOST: broker
+      ENROLL_SECRET: ${ENROLL_SECRET:?ENROLL_SECRET is required}
       FLASK_DEBUG: 0
       FLASK_APP: manage.py
     depends_on:
@@ -99,7 +100,7 @@ services:
     depends_on:
       - proxy
     environment:
-      - ENROLL_SECRET=${ENROLL_SECRET}
+      - ENROLL_SECRET=${ENROLL_SECRET:?ENROLL_SECRET is required}
 volumes:
   broker_data_py3:
   db_data_py3:

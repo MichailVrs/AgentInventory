@@ -22,10 +22,27 @@ def create_app(config=ProdConfig):
 
     # Проверка безопасности секретных ключей при запуске приложения в рабочей среде
     if not app.testing and not app.debug:
-        if app.config.get('SECRET_KEY') in ("vkr-inventory-default-secret-key-2026", "super-secret-production-key-change-me") or not os.environ.get("SECRET_KEY"):
-            raise ValueError("Критическая ошибка безопасности: Переменная окружения SECRET_KEY не задана или использует небезопасное стандартное значение в .env.")
-        if app.config.get('ENROLL_SECRET') == "secret" or not os.environ.get("ENROLL_SECRET"):
-            raise ValueError("Критическая ошибка безопасности: Переменная окружения ENROLL_SECRET не задана или использует небезопасное стандартное значение в .env.")
+        bad_secret_keys = (
+            "vkr-inventory-default-secret-key-2026",
+            "super-secret-production-key-change-me",
+            "set_a_secure_random_flask_secret_key_here",
+            "change-me",
+            "change-me-long-random-string"
+        )
+        bad_enroll_secrets = (
+            "secret",
+            "set_a_secure_osquery_enroll_secret_here",
+            "change-me"
+        )
+
+        current_secret_key = app.config.get('SECRET_KEY')
+        current_enroll_secret = app.config.get('ENROLL_SECRET')
+
+        if not current_secret_key or current_secret_key in bad_secret_keys or not os.environ.get("SECRET_KEY"):
+            raise ValueError("Критическая ошибка безопасности: Переменная окружения SECRET_KEY не задана или использует небезопасное/шаблонное значение в .env.")
+
+        if not current_enroll_secret or current_enroll_secret in bad_enroll_secrets or not os.environ.get("ENROLL_SECRET"):
+            raise ValueError("Критическая ошибка безопасности: Переменная окружения ENROLL_SECRET не задана или использует небезопасное/шаблонное значение в .env.")
 
     register_blueprints(app)
     register_errorhandlers(app)
