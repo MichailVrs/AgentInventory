@@ -653,9 +653,13 @@ $(function() {
         renderSelected();
     }
 
-    $('.tagsinput').each(function() {
-        initTagPicker(this);
-    });
+    $.fn.tagpicker = function() {
+        return this.each(function() {
+            initTagPicker(this);
+        });
+    };
+
+    $('.tagsinput').tagpicker();
 
 
     $(document).on('click', '.js-delete, .glyphicon-trash[data-uri]', function(event) {

@@ -60,6 +60,9 @@
         if ($('#nodesTable').length > 0) {
             $('#nodesTable').DataTable({
                 "pageLength": 50,
+                "drawCallback": function(settings) {
+                    $('#nodesTable').find('.tagsinput').tagpicker();
+                },
                 "language": {
                     "processing": "Подождите...",
                     "search": "Поиск:",
