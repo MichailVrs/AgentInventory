@@ -20,6 +20,13 @@ def create_app(config=ProdConfig):
     app.config.from_object(config)
     app.config.from_envvar('INVENTORY_SETTINGS', silent=True)
 
+    # Проверка безопасности секретных ключей при запуске приложения в рабочей среде
+    if not app.testing and not app.debug:
+        if app.config.get('SECRET_KEY') in ("vkr-inventory-default-secret-key-2026", "super-secret-production-key-change-me") or not os.environ.get("SECRET_KEY"):
+            raise ValueError("Критическая ошибка безопасности: Переменная окружения SECRET_KEY не задана или использует небезопасное стандартное значение в .env.")
+        if app.config.get('ENROLL_SECRET') == "secret" or not os.environ.get("ENROLL_SECRET"):
+            raise ValueError("Критическая ошибка безопасности: Переменная окружения ENROLL_SECRET не задана или использует небезопасное стандартное значение в .env.")
+
     register_blueprints(app)
     register_errorhandlers(app)
     register_loggers(app)

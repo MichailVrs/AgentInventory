@@ -11,7 +11,7 @@ services:
     depends_on:
       - server
   server:
-    image: inventory-python-py3
+    image: inventory-python
     build: ./docker/python
     command: ["/venv/bin/python", "manage.py", "run", "-h", "0.0.0.0"]
     volumes:
@@ -31,7 +31,6 @@ services:
       ASSETS_DEBUG: False
       REDIS_HOST: broker
       ENROLL_SECRET: ${ENROLL_SECRET}
-      AUTH_METHOD: internal
       FLASK_DEBUG: 0
       FLASK_APP: manage.py
     depends_on:
@@ -40,7 +39,7 @@ services:
       db:
         condition: service_healthy
   worker:
-    image: inventory-python-py3
+    image: inventory-python
     build: ./docker/python
     command: ["/venv/bin/celery", "-A", "worker:celery", "worker", "-l", "INFO"]
     volumes:
@@ -90,7 +89,7 @@ services:
       retries: 5     
       start_period: 10s
   agent:
-    image: inventory-osquery-py3
+    image: inventory-osquery
     build: ./docker/osquery
     command: ["--flagfile", "/etc/osquery.flags"]
     volumes:

@@ -113,16 +113,6 @@ def oauth2callback():
     return redirect(url_for('users.login'))
 
 
-@blueprint.route('/debug_login')
-def debug_login():
-    from models import User
-    user = User.query.filter_by(username='admin').first()
-    if not user:
-        user = User.create(username='admin', email='admin@example.com', password='password')
-    
-    login_user(user)
-    return redirect(url_for('manage.index'))
-
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
