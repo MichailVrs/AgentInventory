@@ -60,18 +60,6 @@ def get_or_create_offline_node(host_id, records):
     node = Node.query.filter(
         (Node.host_identifier == host_id) | (Node.node_key == host_id)
     ).first()
-    if node:
-        return node
-
-    node = Node(
-        host_identifier=host_id,
-        last_ip="127.0.0.1",
-        is_active=True
-    )
-    hostname = find_hostname(records)
-    if hostname:
-        node.node_info = {'hostname': hostname}
-    node.save()
     return node
 
 
@@ -82,6 +70,8 @@ def import_grouped_records(grouped):
     nodes_updated = 0
     for host_id, records in grouped.items():
         node = get_or_create_offline_node(host_id, records)
+        if not node:
+            continue
         payload = {
             'node_key': node.node_key,
             'log_type': 'result',

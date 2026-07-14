@@ -177,5 +177,49 @@ class APISmokeTestCase(unittest.TestCase):
         # Проверяем, что она успешно удалена из базы данных.
         self.assertIsNone(DistributedQueryTask.query.get(task_id))
 
+    def test_import_offline_logs(self):
+        from services.offline_import import import_grouped_records
+        
+        # 1. Сначала проверим, что лог для зарегистрированного агента импортируется.
+        node = Node.create(host_identifier='registered-node-123')
+        
+        grouped_data = {
+            'registered-node-123': [
+                {
+                    'name': 'pack/cmdb_full/cmdb_os_info',
+                    'action': 'added',
+                    'columns': {
+                        'os_name': 'Astra Linux',
+                        'os_version': '1.7'
+                    },
+                    'calendarTime': 'Wed Jun 10 14:00:00 2026 UTC'
+                }
+            ],
+            'unregistered-node-456': [
+                {
+                    'name': 'pack/cmdb_full/cmdb_os_info',
+                    'action': 'added',
+                    'columns': {
+                        'os_name': 'Windows',
+                        'os_version': '11'
+                    },
+                    'calendarTime': 'Wed Jun 10 14:00:00 2026 UTC'
+                }
+            ]
+        }
+        
+        with patch('tasks.normalize_to_cmdb.delay'), \
+             patch('tasks.analyze_result.delay'), \
+             patch('tasks.learn_from_result.delay'):
+             
+            updated_count = import_grouped_records(grouped_data)
+            
+            # Должен обновиться только 1 (зарегистрированный) узел
+            self.assertEqual(updated_count, 1)
+            
+            # Узел unregistered-node-456 не должен быть создан в БД
+            unregistered_node = Node.query.filter_by(host_identifier='unregistered-node-456').first()
+            self.assertIsNone(unregistered_node)
+
 if __name__ == '__main__':
     unittest.main()
