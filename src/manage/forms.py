@@ -3,7 +3,7 @@ import json
 
 from flask import current_app
 from flask_wtf import FlaskForm as Form
-from flask_wtf.file import FileField, FileRequired
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 
 from wtforms.fields import (
     BooleanField,
@@ -249,4 +249,16 @@ class UpdateNodeForm(Form):
 
 
 class UploadOfflineLogsForm(Form):
-    logs_file = FileField(u'Файл результатов сбора (.json или .log)', validators=[FileRequired()])
+    logs_file = FileField(u'Файл результатов сбора (.json или .log)', validators=[
+        FileRequired(),
+        FileAllowed(['json', 'log'], u'Допускаются только файлы с расширением .json или .log')
+    ])
+
+    def validate_logs_file(self, field):
+        if field.data:
+            max_size = 20 * 1024 * 1024 # 20MB
+            field.data.seek(0, 2)
+            size = field.data.tell()
+            field.data.seek(0)
+            if size > max_size:
+                raise ValidationError(u"Размер файла превышает максимально допустимый предел (20 МБ).")

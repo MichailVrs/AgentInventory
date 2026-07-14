@@ -212,14 +212,30 @@ class APISmokeTestCase(unittest.TestCase):
              patch('tasks.analyze_result.delay'), \
              patch('tasks.learn_from_result.delay'):
              
-            updated_count = import_grouped_records(grouped_data)
+            updated_count, skipped_count = import_grouped_records(grouped_data)
             
             # Должен обновиться только 1 (зарегистрированный) узел
             self.assertEqual(updated_count, 1)
+            self.assertEqual(skipped_count, 1)
             
             # Узел unregistered-node-456 не должен быть создан в БД
             unregistered_node = Node.query.filter_by(host_identifier='unregistered-node-456').first()
             self.assertIsNone(unregistered_node)
+
+    def test_import_offline_logs_validation(self):
+        from services.offline_import import parse_offline_records
+        
+        # Данные содержат 1 валидную и 2 невалидных записи
+        body_data = (
+            '{"hostIdentifier": "node-1", "name": "q1", "calendarTime": "Wed Jun 10 14:00:00 2026 UTC", "columns": {}, "action": "added"}\n'
+            '{"hostIdentifier": "node-2"}\n' # missing name and calendarTime
+            'not_a_json_at_all\n'
+        )
+        
+        valid_records, invalid_count = parse_offline_records(body_data)
+        
+        self.assertEqual(len(valid_records), 1)
+        self.assertEqual(invalid_count, 2)
 
 if __name__ == '__main__':
     unittest.main()

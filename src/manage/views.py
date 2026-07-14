@@ -1031,7 +1031,7 @@ def import_offline_logs():
     form = UploadOfflineLogsForm()
     if form.validate_on_submit():
         body = decode_upload_body(form.logs_file.data)
-        records = parse_offline_records(body)
+        records, invalid_count = parse_offline_records(body)
         if not records:
             flash(u"Не удалось извлечь корректные записи результатов в формате JSON.", "danger")
             return render_template('import_offline.html', form=form)
@@ -1041,9 +1041,19 @@ def import_offline_logs():
             flash(u"Не найдены идентификаторы хостов (hostIdentifier) в загруженных данных.", "danger")
             return render_template('import_offline.html', form=form)
 
-        nodes_updated = import_grouped_records(grouped)
-        flash(u"Успешно обработаны результаты для {0} хостов.".format(nodes_updated), "success")
-        return redirect(url_for('manage.nodes'))
+        nodes_updated, nodes_skipped = import_grouped_records(grouped)
+        if invalid_count > 0:
+            flash(u"Пропущено некорректных записей: {0}.".format(invalid_count), "warning")
+            
+        if nodes_updated > 0:
+            msg = u"Успешно обработаны результаты для {0} хостов.".format(nodes_updated)
+            if nodes_skipped > 0:
+                msg += u" Пропущено незарегистрированных хостов: {0}.".format(nodes_skipped)
+            flash(msg, "success")
+            return redirect(url_for('manage.nodes'))
+        else:
+            flash(u"Ни один хост не обновлен. Пропущено незарегистрированных хостов: {0}.".format(nodes_skipped), "warning")
+            return render_template('import_offline.html', form=form)
         
     flash_errors(form)
     return render_template('import_offline.html', form=form)
