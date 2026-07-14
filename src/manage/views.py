@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from io import BytesIO
+from io import BytesIO, StringIO
 from operator import itemgetter
 import datetime as dt
-import unicodecsv as csv
+import csv
 
 from flask import (
     Blueprint, current_app, flash, jsonify, redirect, render_template,
@@ -141,10 +141,10 @@ def nodes_csv():
     headers.extend(labels)
     headers = list(headers)
 
-    bio = BytesIO()
-    bio.write(EXCEL_CSV_PREAMBLE_BYTES)
+    sio = StringIO()
+
     writer = csv.writer(
-        bio,
+        sio,
         delimiter=EXCEL_CSV_DELIMITER,
         lineterminator=EXCEL_CSV_LINETERMINATOR,
     )
@@ -163,7 +163,8 @@ def nodes_csv():
         row.extend([format_csv_value(node.node_info.get(column, '')) for column in column_names])
         writer.writerow(row)
 
-    bio.seek(0)
+    csv_bytes = EXCEL_CSV_PREAMBLE_BYTES + sio.getvalue().encode('utf-8')
+    bio = BytesIO(csv_bytes)
 
     response = send_file(
         bio,

@@ -3,8 +3,8 @@ import datetime as dt
 import csv
 
 
-EXCEL_CSV_PREAMBLE = u'\ufeffsep=;\r\n'
-EXCEL_CSV_PREAMBLE_BYTES = EXCEL_CSV_PREAMBLE.encode('utf-8')
+EXCEL_CSV_PREAMBLE = u'\ufeff'
+EXCEL_CSV_PREAMBLE_BYTES = b'\xef\xbb\xbf'
 EXCEL_CSV_DELIMITER = ';'
 EXCEL_CSV_LINETERMINATOR = '\r\n'
 
