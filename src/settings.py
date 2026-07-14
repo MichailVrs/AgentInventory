@@ -5,7 +5,7 @@ import os
 
 
 class Config(object):
-    SECRET_KEY = os.environ.get("SECRET_KEY", "vkr-inventory-default-secret-key-2026")
+    SECRET_KEY = os.environ.get("SECRET_KEY", "agent-inventory-default-secret-key-2026")
     SERVER_NAME = None  # Отключаем строгое совпадение, чтобы исправить 404 за прокси.
 
     SQLALCHEMY_DATABASE_URI = "postgresql://{user}:{pwd}@{host}:{port}/{dbname}".format(

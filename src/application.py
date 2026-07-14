@@ -7,7 +7,7 @@ from api import blueprint as api
 from assets import assets
 from manage import blueprint as backend
 from extensions import (
-    bcrypt, csrf, db, debug_toolbar, ldap_manager, log_tee, login_manager,
+    bcrypt, csrf, db, ldap_manager, log_tee, login_manager,
     mail, make_celery, migrate, rule_manager, sentry
 )
 from settings import ProdConfig
@@ -23,7 +23,7 @@ def create_app(config=ProdConfig):
     # Проверка безопасности секретных ключей при запуске приложения в рабочей среде
     if not app.testing and not app.debug:
         bad_secret_keys = (
-            "vkr-inventory-default-secret-key-2026",
+            "agent-inventory-default-secret-key-2026",
             "super-secret-production-key-change-me",
             "set_a_secure_random_flask_secret_key_here",
             "change-me",
@@ -74,7 +74,6 @@ def register_extensions(app):
     db.init_app(app)
     migrate.init_app(app, db)
     assets.init_app(app)
-    # debug_toolbar.init_app(app)
     log_tee.init_app(app)
     rule_manager.init_app(app)
     mail.init_app(app)

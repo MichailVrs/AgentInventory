@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from flask_bcrypt import Bcrypt
-from flask_debugtoolbar import DebugToolbarExtension
 from flask_ldap3_login import LDAP3LoginManager
 from flask_login import LoginManager
 from flask_mail import Mail
@@ -210,7 +209,6 @@ csrf = CSRFProtect()
 db = SQLAlchemy()
 mail = Mail()
 migrate = Migrate()
-debug_toolbar = DebugToolbarExtension()
 log_tee = LogTee()
 ldap_manager = LDAP3LoginManager()
 login_manager = LoginManager()

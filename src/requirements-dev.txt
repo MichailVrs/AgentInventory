@@ -1,0 +1,12 @@
+atomicwrites==1.2.1
+attrs==18.2.0
+factory-boy==2.11.1
+Faker==1.0.1
+Flask-DebugToolbar==0.10.1
+mock==2.0.0
+more-itertools==5.0.0
+pathlib2==2.3.3
+pluggy==0.8.0
+pytest==4.0.2
+scandir==1.9.0
+WebTest==2.0.32

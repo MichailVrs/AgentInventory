@@ -9,7 +9,7 @@ x509_extensions    = v3_req
 C = RU
 ST = Moscow
 L = Moscow
-O = MyOrg
+O = IT-Inventory
 CN = proxy
 
 [v3_req]

@@ -1,5 +1,5 @@
 {
-  "name": "vkr-inventory",
+  "name": "agent-inventory",
   "dependencies": {
     "bootstrap": "~3.2.0",
     "jQuery": "~2.1.3",

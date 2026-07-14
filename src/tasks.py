@@ -30,14 +30,6 @@ def learn_from_result(result, node):
     return
 
 
-@celery.task()
-def example_task(one, two):
-    from celery.utils.log import get_task_logger
-    logger = get_task_logger(__name__)
-    logger.info('Adding {0} and {1}'.format(one, two))
-    return one + two
-
-
 
 @celery.task()
 def notify_of_node_enrollment(node):

@@ -58,10 +58,16 @@ make init
 
 ### Шаг 3. Запуск системы
 
-После успешной инициализации запустите все контейнеры в фоновом режиме:
+Для запуска основной серверной инфраструктуры системы (продуктивная среда):
 
 ```bash
 docker compose up -d
+```
+
+Если вы хотите запустить систему совместно с локальным демонстрационным агентом `osquery` для тестирования:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.demo.yml up -d
 ```
 
 Проверьте статус запущенных сервисов:
@@ -69,7 +75,7 @@ docker compose up -d
 ```bash
 docker compose ps
 ```
-Все контейнеры (`server`, `worker`, `db`, `proxy`, `broker`, `agent`) должны находиться в статусе `Up` (сервис базы данных должен быть `healthy`).
+Все основные контейнеры (`server`, `worker`, `db`, `proxy`, `broker`) должны находиться в статусе `Up` (сервис базы данных должен быть `healthy`). В случае запуска демонстрационного агента контейнер `agent` также должен быть в статусе `Up`.
 
 ---
 
@@ -117,15 +123,15 @@ docker compose ps
   ```
 * **Просмотр логов агента osquery:**
   ```bash
-  docker compose logs -f agent
+  docker compose -f docker-compose.yml -f docker-compose.demo.yml logs -f agent
   ```
 * **Запуск osqueryi для отладки локальных SQL-таблиц:**
   ```bash
-  make osqueryi
+  docker compose -f docker-compose.yml -f docker-compose.demo.yml run --rm --no-deps --entrypoint=osqueryi agent
   ```
 * **Остановка всей системы:**
   ```bash
-  docker compose down
+  docker compose -f docker-compose.yml -f docker-compose.demo.yml down
   ```
 * **Полная очистка с удалением всех накопленных данных:**
   ```bash

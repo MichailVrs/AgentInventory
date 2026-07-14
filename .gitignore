@@ -45,6 +45,5 @@ doc_text.txt
 *.db
 *.sqlite
 
-# --- Academic Documents (Thesis) ---
-ВКР.docx
+# --- Local documents ---
 *.docx

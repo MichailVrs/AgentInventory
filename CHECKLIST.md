@@ -10,7 +10,7 @@
 - [ ] **Статус Docker-контейнеров:** 
   При выполнении команды:
   ```bash
-  docker compose ps
+  docker compose -f docker-compose.yml -f docker-compose.demo.yml ps
   ```
   Все 6 контейнеров находятся в состоянии `running` (для PostgreSQL также должно отображаться `healthy`):
   * `inventory-proxy` (Nginx) — порты `0.0.0.0:4444->4443/tcp`, `0.0.0.0:8081->8080/tcp`
@@ -18,7 +18,7 @@
   * `inventory-worker` (Celery Tasks)
   * `inventory-broker` (Redis)
   * `inventory-db` (PostgreSQL)
-  * `inventory-agent` (Osquery client)
+  * `inventory-agent` (Osquery client, если запущен демонстрационный стек)
 
 ---
 

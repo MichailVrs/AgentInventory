@@ -1,7 +1,7 @@
 {
-  "name": "vkr-inventory",
+  "name": "agent-inventory",
   "version": "1.0.0",
-  "description": "VKR Inventory System",
+  "description": "Agent Inventory System",
   "main": "index.js",
   "directories": {
     "doc": "docs",

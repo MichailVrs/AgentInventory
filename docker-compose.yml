@@ -89,19 +89,6 @@ services:
       timeout: 5s    
       retries: 5     
       start_period: 10s
-  agent:
-    image: inventory-osquery
-    build: ./docker/osquery
-    command: ["--flagfile", "/etc/osquery.flags"]
-    volumes:
-      - ./staks/osquery/osquery.flags:/etc/osquery.flags
-      - ./staks/ssl/certs/certificate.crt:/ssl/certificate.crt:ro
-      - /data
-    depends_on:
-      - proxy
-    environment:
-      - ENROLL_SECRET=${ENROLL_SECRET:?ENROLL_SECRET is required}
 volumes:
   broker_data_py3:
   db_data_py3:
-  agent_data_py3:
